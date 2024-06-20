@@ -12,3 +12,104 @@ datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id           Int     @id @default(autoincrement())
+  email        String  @unique
+  username     String? @unique @db.VarChar(100)
+  password     String  @db.VarChar(100)
+  profileImage String? @map("profile_image")
+  isVerify     Boolean @default(false) @map("is_verify")
+
+  events Event[]
+}
+
+model Event {
+  id          Int      @id @default(autoincrement())
+  eventName   String   @map("event_name") @db.VarChar(100)
+  description String?  @db.Text
+  eventImage  String?  @map("event_image")
+  dueDate     DateTime @map("due_date") @db.Timestamp(5)
+  timeLimit   Int      @map("time_limit")
+  userId      Int      @map("user_id")
+
+  user            User             @relation(fields: [userId], references: [id])
+  participants    Participant[]
+  assignOfBridges AssignOfBridge[]
+}
+
+model Participant {
+  id            Int    @id @default(autoincrement())
+  username      String @unique @db.VarChar(100)
+  profileAvatar String @map("profile_avatar")
+  raceTime      Int    @map("race_time")
+  eventId       Int    @map("event_id")
+
+  event           Event            @relation(fields: [eventId], references: [id])
+  AnswerOfBridges AnswerOfBridge[]
+}
+
+model AssignOfBridge {
+  id         Int @id @default(autoincrement())
+  timeLimit  Int @map("time_limit")
+  eventId    Int @map("event_id")
+  questionId Int @map("question_id")
+
+  event    Event    @relation(fields: [eventId], references: [id])
+  question Question @relation(fields: [questionId], references: [id])
+
+  @@map("assign_of_bridge")
+}
+
+model AnswerOfBridge {
+  id            Int         @id @default(autoincrement())
+  answer        Int         @default(0)
+  timeStamp     Int?        @map("time_stamp")
+  participantId Int         @map("participant_id")
+  participant   Participant @relation(fields: [participantId], references: [id])
+
+  @@map("answer_of_bridge")
+}
+
+enum AnswerChoice {
+  A
+  B
+  C
+  D
+  Z
+}
+
+model Question {
+  id              Int          @id @default(autoincrement())
+  question        String       @db.VarChar(255)
+  questionPicture String?      @map("question_picture")
+  choice1         String       @map("choice_1") @db.VarChar(100)
+  choice2         String       @map("choice_2") @db.VarChar(100)
+  choice3         String?      @map("choice_3") @db.VarChar(100)
+  choice4         String?      @map("choice_4") @db.VarChar(100)
+  answer          AnswerChoice @default(Z)
+  isPublic        Boolean      @default(false) @map("is_public")
+  topicId         Int          @map("topic_id")
+
+  topic            Topic             @relation(fields: [topicId], references: [id])
+  assignOfBridges  AssignOfBridge[]
+  questionComments QuestionComment[]
+}
+
+model Topic {
+  id        Int    @id @default(autoincrement())
+  topicType String @map("topic_type") @db.VarChar(100)
+
+  questions Question[]
+}
+
+model QuestionComment {
+  id         Int     @id @default(autoincrement())
+  rate       Int
+  comment    String? @db.Text
+  questionId Int     @map("question_id")
+
+  question Question @relation(fields: [questionId], references: [id])
+
+  @@map("question_comment")
+}
