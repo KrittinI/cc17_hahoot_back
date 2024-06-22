@@ -13,15 +13,60 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model UserVerify {
+  id             String   @id @default(uuid())
+  createdAt      DateTime @default(now()) @map("created_at")
+  username       String?  @unique @db.VarChar(20)
+  emailEncrypted String   @unique @map("email_encrypted")
+  emailIv        String   @unique @map("email_iv")
+  password       String   @db.VarChar(100)
+  isMod          Boolean  @default(false) @map("is_mod")
+  isAdmin        Boolean  @default(false) @map("is_admin")
+  emailConfirmed Boolean  @default(false) @map("email_confirmed")
+
+  profile User?
+
+  @@map("user_verify")
+}
+
 model User {
   id           Int     @id @default(autoincrement())
-  email        String  @unique
-  username     String? @unique @db.VarChar(100)
-  password     String  @db.VarChar(100)
+  userid       String  @unique @map("user_id")
   profileImage String? @map("profile_image")
-  isVerify     Boolean @default(false) @map("is_verify")
 
-  events Event[]
+  userVerify       UserVerify         @relation(fields: [userid], references: [id])
+  posts            Post[]
+  comments         Comment[]
+  events           Event[]
+  EventComment     EventComment[]
+  EventFavorite    EventFavorite[]
+  Question         Question[]
+  QuestionComment  QuestionComment[]
+  QuestionFavorite QuestionFavorite[]
+}
+
+model Post {
+  id        Int       @id @default(autoincrement())
+  title     String    @db.VarChar(300)
+  caption   String    @db.VarChar(1000)
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamp(5)
+  deletedAt DateTime? @map("deleted_at") @db.Timestamp(5)
+  upvotes   Int       @default(0)
+  downvotes Int       @default(0)
+  authorId  Int       @map("author_id")
+  comments  Comment[]
+  author    User      @relation(fields: [authorId], references: [id])
+}
+
+model Comment {
+  id        Int      @id @default(autoincrement())
+  postId    Int      @map("post_id")
+  data      String   @db.Text
+  createdAt DateTime @default(now()) @db.Timestamp(5)
+
+  post   Post  @relation(fields: [postId], references: [id])
+  User   User? @relation(fields: [userId], references: [id])
+  userId Int?
 }
 
 model Event {
@@ -31,16 +76,23 @@ model Event {
   eventImage  String?  @map("event_image")
   dueDate     DateTime @map("due_date") @db.Timestamp(5)
   timeLimit   Int      @map("time_limit")
-  userId      Int      @map("user_id")
+  creatorId   Int      @map("creator_id")
+  questionId  Int      @map("question_id")
+  topicId     Int      @map("topic_id")
+  isPublic    Boolean  @default(false)
 
-  user            User             @relation(fields: [userId], references: [id])
+  user            User             @relation(fields: [creatorId], references: [id])
+  topic           Topic            @relation(fields: [topicId], references: [id])
+  question        AssignOfBridge   @relation(name: "question", fields: [questionId], references: [id])
   participants    Participant[]
   assignOfBridges AssignOfBridge[]
+  EventComment    EventComment[]
+  EventFavorite   EventFavorite[]
 }
 
 model Participant {
   id            Int    @id @default(autoincrement())
-  username      String @unique @db.VarChar(100)
+  username      String @unique @db.VarChar(20)
   profileAvatar String @map("profile_avatar")
   raceTime      Int    @map("race_time")
   eventId       Int    @map("event_id")
@@ -55,20 +107,49 @@ model AssignOfBridge {
   eventId    Int @map("event_id")
   questionId Int @map("question_id")
 
-  event    Event    @relation(fields: [eventId], references: [id])
-  question Question @relation(fields: [questionId], references: [id])
+  event          Event            @relation(fields: [eventId], references: [id])
+  question       Question         @relation(fields: [questionId], references: [id])
+  AnswerOfBridge AnswerOfBridge[]
+  events         Event[]          @relation(name: "question")
 
   @@map("assign_of_bridge")
 }
 
 model AnswerOfBridge {
-  id            Int         @id @default(autoincrement())
-  answer        Int         @default(0)
-  timeStamp     Int?        @map("time_stamp")
-  participantId Int         @map("participant_id")
-  participant   Participant @relation(fields: [participantId], references: [id])
+  id            Int  @id @default(autoincrement())
+  answer        Int
+  assignId      Int  @map("assign_id")
+  participantId Int  @map("participant_id")
+  timeStamp     Int? @map("time_stamp")
+
+  assign      AssignOfBridge @relation(fields: [assignId], references: [id])
+  participant Participant    @relation(fields: [participantId], references: [id])
 
   @@map("answer_of_bridge")
+}
+
+model EventComment {
+  id      Int     @id @default(autoincrement())
+  rate    Int
+  comment String? @db.Text
+  userId  Int     @map("user_id")
+  eventId Int     @map("event_id")
+
+  user  User  @relation(fields: [userId], references: [id])
+  event Event @relation(fields: [eventId], references: [id])
+
+  @@map("event_comment")
+}
+
+model EventFavorite {
+  id      Int @id @default(autoincrement())
+  userId  Int @map("user_id")
+  eventId Int @map("event_id")
+
+  user  User  @relation(fields: [userId], references: [id])
+  event Event @relation(fields: [eventId], references: [id])
+
+  @@map("event_favorite")
 }
 
 enum AnswerChoice {
@@ -90,17 +171,13 @@ model Question {
   answer          AnswerChoice @default(Z)
   isPublic        Boolean      @default(false) @map("is_public")
   topicId         Int          @map("topic_id")
+  creatorId       Int          @map("creator_id")
 
-  topic            Topic             @relation(fields: [topicId], references: [id])
+  topic            Topic              @relation(fields: [topicId], references: [id])
+  creator          User               @relation(fields: [creatorId], references: [id])
   assignOfBridges  AssignOfBridge[]
   questionComments QuestionComment[]
-}
-
-model Topic {
-  id        Int    @id @default(autoincrement())
-  topicType String @map("topic_type") @db.VarChar(100)
-
-  questions Question[]
+  QuestionFavorite QuestionFavorite[]
 }
 
 model QuestionComment {
@@ -108,8 +185,29 @@ model QuestionComment {
   rate       Int
   comment    String? @db.Text
   questionId Int     @map("question_id")
+  userId     Int     @map("user_id")
 
   question Question @relation(fields: [questionId], references: [id])
+  user     User     @relation(fields: [userId], references: [id])
 
   @@map("question_comment")
+}
+
+model QuestionFavorite {
+  id         Int @id @default(autoincrement())
+  userId     Int @map("user_id")
+  questionId Int @map("question_id")
+
+  user     User     @relation(fields: [userId], references: [id])
+  question Question @relation(fields: [questionId], references: [id])
+
+  @@map("question_favorite")
+}
+
+model Topic {
+  id        Int    @id @default(autoincrement())
+  topicType String @map("topic_type") @db.VarChar(100)
+
+  questions Question[]
+  Event     Event[]
 }
