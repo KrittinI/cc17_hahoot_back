@@ -1,21 +1,31 @@
-import Joi from "joi";
+const Joi = require("joi");
+const createError = require("../utils/create-error");
 
 const loginSchema = Joi.object({
-    userName: Joi.string().required(),
-    password: Joi.string().required()
-})
+  email: Joi.string()
+    .email({ tlds: false })
+    .messages({ "string.empty": "Email is not allowed to be empty." })
+    .message({
+      "string.email": "Email is not formatted correctly.",
+    }),
+  password: Joi.string()
+    .required()
+    .messages({ "string.empty": "Password is not allowed to be empty." }),
+});
 
+const validateLogin = (input) => {
+  const { value, error } = loginSchema.validate(input, {
+    abortEarly: false,
+  });
 
-const validateLogin = input => {
-    const { error } = loginSchema.validate(input, { abortEarly: false });
-    if (error) {
-        const result = error.details.reduce((acc, c) => {
-            acc[c.path[0]] = c.message
-            return acc
-        }, {})
-        // console.dir(error);
-        return result
-    }
-}
+  if (error) {
+    createError({
+      message: error.details[0].message,
+      statusCode: 400,
+    });
+  }
 
-export default validateLogin;
+  return value;
+};
+
+module.exports = validateLogin;

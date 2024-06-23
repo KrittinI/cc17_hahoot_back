@@ -1,31 +1,44 @@
-import Joi from "joi";
+const Joi = require("joi");
+const createError = require("../utils/create-error");
 
-const registerSchema = Joi.object(
-    {
-        userName: Joi.string().required().trim().messages({ 'string.empty': 'user name is required.' }),
-        firstName: Joi.string().required().trim().messages({ 'string.empty': 'first name is required.' }),
-        lastName: Joi.string().required().trim().messages({ 'string.empty': 'last name is required.' }),
-        email: Joi.string().required().email({ tlds: false }).messages({ 'string.empty': 'last name is required.' }),
-        mobile: Joi.string().required().pattern(/^[0-9]{10}$/).messages({ 'string.empty': 'last name is required.' }),
-        password: Joi.string().required().pattern(/^[0-9a-zA-Z]{6,}$/).messages({ 'string.empty': 'password is required.', "string.pattern.base": 'password must have at least 6 characters' }),
-        confirmPassword: Joi.string().required().valid(Joi.ref('password')).messages({ 'string.empty': 'password is required.', 'any.only': 'password and confirm password did not match' })
-    }
-)
+const registerSchema = Joi.object({
+  email: Joi.string()
+    .email({ tlds: false })
+    .messages({ "string.empty": "Email is not allowed to be empty." })
+    .message({
+      "string.email":
+        "Email is not formatted correctly and is not a valid email.",
+    }),
+  password: Joi.string()
+    .required()
+    .pattern(new RegExp("^[0-9a-zA-Z]{5,}$"))
+    .messages({ "string.empty": "Password is not allowed to be empty." })
+    .message({
+      "string.pattern.base": "Password must be at least 5 characters.",
+    }),
+  confirmPassword: Joi.string()
+    .required()
+    .valid(Joi.ref("password"))
+    .messages({ "any.only": "Password and confirm password did not match." })
+    .messages({
+      "string.empty": "Confirm password is not allowed to be empty.",
+    })
+    .strip(),
+});
 
 const validateRegister = (input) => {
-    const { error } = registerSchema.validate(
-        input,
-        { abortEarly: false, allowUnknown: true }
-    )
-    if (error) {
-        const result = error.details.reduce((acc, c) => {
-            acc[c.path[0]] = c.message
-            return acc
-        }, {})
-        console.dir(error);
-        return result
-    }
-}
+  const { value, error } = registerSchema.validate(input, {
+    abortEarly: false,
+  });
 
+  if (error) {
+    createError({
+      message: error.details[0].message,
+      statusCode: 400,
+    });
+  }
 
-export default validateRegister;
+  return value;
+};
+
+module.exports = validateRegister;
