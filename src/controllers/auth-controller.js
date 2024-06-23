@@ -1,47 +1,37 @@
-<<<<<<< Updated upstream
-const authController = {}
-
-authController.login = (req, res, next) => {
-    console.log("login");
-}
-authController.register = (req, res, next) => {
-    console.log("register");
-=======
 const authService = require("../services/auth-service");
 const hashService = require("../services/hash-service");
 const jwtService = require("../services/jwt-services");
 const verifyService = require("../services/verify-service");
 const createError = require("../utils/create-error");
-const uuid = require('uuid').v4
-const transporter = require('../utils/nodemailer')
+const transporter = require('../utils/nodemailer');
+const validateLogin = require("../validators/login-validator");
+const validateRegister = require("../validators/register-validator");
 
 const authController = {}
 
 authController.register = async (req, res, next) => {
     try {
         const data = req.body
+        validateRegister(data)
 
-        if (data.password !== data.confirmPassword) {
-            createError(400, "password and confirmpassword is not match")
+        const existEmail = await authService.findUserByEmail(data.email)
+        if (existEmail) {
+            createError(400, "email already existed")
         }
-
-        // const existEmail = authService.findUserByEmail(data.email)
-        // if (existEmail) {
-        //     createError(400, "email already existed")
-        // }
-
         data.password = await hashService.hash(data.password)
         delete data.confirmPassword
 
-        const id = uuid()
-        const tempData = JSON.stringify(data)
-        const result = verifyService.createVerfiId(id, tempData)
-        const mailOptions = {
-            from: process.env.NODE_MAILER_USER,                // sender
-            to: data.email,                // list of receivers
-            subject: 'Hello from sender',              // Mail subject
-            html: `<b>Please do not reply this mail</b>\n\n <a href="http://localhost:8008/auth/verify?verifyId=${id}">Verify</a>`,   // HTML body
-        };
+        const result = await authService.createUser(data)
+
+        // ------------------------- for using email verify ------------------------
+        // const tempData = JSON.stringify(data)
+        // const result = await verifyService.createVerfiId(tempData)
+        // const mailOptions = {
+        //     from: process.env.NODE_MAILER_USER,                // sender
+        //     to: data.email,                // list of receivers
+        //     subject: 'Hello from sender',              // Mail subject
+        //     html: `<b>Please do not reply this mail</b>\n\n <a href="http://localhost:8008/auth/verify?verifyId=${result.id}">Verify</a>`,   // HTML body
+        // };
         // transporter.sendMail(mailOptions, function (err, info) {
         //     if (err)
         //         console.log(err)
@@ -54,7 +44,6 @@ authController.register = async (req, res, next) => {
     } catch (error) {
         next(error)
     }
->>>>>>> Stashed changes
 }
 
 authController.verify = async (req, res, next) => {
@@ -65,9 +54,10 @@ authController.verify = async (req, res, next) => {
         if (!existedKey) {
             createError(400, "Not foud user")
         }
+        await verifyService.deleteDataById(existedKey.id)
+        const data = JSON.parse(existedKey.data)
 
-        const data = JSON.parse(existedKey)
-        authService.createUser(data)
+        await authService.createUser(data)
 
         res.json(data)
         // resstatus(200).redirect('https://localhost:5173')
@@ -80,6 +70,7 @@ authController.verify = async (req, res, next) => {
 authController.login = async (req, res, next) => {
     try {
         const data = req.body
+        validateLogin(data)
 
         const existUser = await authService.findUserByEmail(data.email)
         if (!existUser) {
@@ -99,11 +90,8 @@ authController.login = async (req, res, next) => {
 }
 
 authController.getMe = (req, res, next) => {
-<<<<<<< Updated upstream
-    console.log("getme");
-=======
     res.status(200).json({ user: req.user })
->>>>>>> Stashed changes
+
 }
 
 

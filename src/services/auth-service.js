@@ -1,7 +1,13 @@
+const prisma = require("../models/prisma")
+
 const authService = {}
 
-authService.findUserByEmail = (email) => email
+authService.findUserByEmail = (email) => prisma.user.findFirst({
+    where: { email }
+})
 
-authService.createUser = data => data
+authService.createUser = data => prisma.user.create({
+    data: data
+})
 
 module.exports = authService
