@@ -12,12 +12,12 @@ const authenticate = async (req, res, next) => {
         const accessToken = authorization.split(' ')[1]
         const payload = jwt.verify(accessToken, process.env.JWT_SECRET)
 
-        // const user = await userService.findUserById(payload.id)
-        // if (!user) {
-        // createError(400, "user not found")
-        // }
-        // delete user.password
-        // req.user = user
+        const user = await userService.findUserById(payload.id)
+        if (!user) {
+            createError(400, "user not found")
+        }
+        delete user.password
+        req.user = user
         next()
     } catch (error) {
         next(error)
