@@ -32,10 +32,7 @@ const validateRegister = (input) => {
   });
 
   if (error) {
-    createError({
-      message: error.details[0].message,
-      statusCode: 400,
-    });
+    createError(400, error.details[0].message);
   }
 
   return value;
