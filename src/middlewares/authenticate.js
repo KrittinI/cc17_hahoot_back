@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const createError = require('../utils/create-error');
+const jwtService = require('../services/jwt-services');
 // const userService = require('../services/user-service');
 
 const authenticate = async (req, res, next) => {
@@ -10,7 +11,7 @@ const authenticate = async (req, res, next) => {
         }
 
         const accessToken = authorization.split(' ')[1]
-        const payload = jwt.verify(accessToken, process.env.JWT_SECRET)
+        const payload = jwtService.verify(accessToken)
 
         const user = await userService.findUserById(payload.id)
         if (!user) {
