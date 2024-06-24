@@ -1,8 +1,18 @@
-const { Router } = require('express')
+const { Router } = require("express");
+const questionController = require("../controllers/question-controller");
 // const questionController = require('../controllers/question-controller')
 
-const questionRouter = Router()
+const questionRouter = Router();
 
-// questionRouter.get('/',questionController)
+questionRouter.get("/", questionController.getAllQuestion);
+questionRouter.get("/topic/:topicId", questionController.getQuestionByTopicId);
+questionRouter.get("/favorite", questionController.getFavQuestionByAuthId);
 
-module.exports = questionRouter
+questionRouter.get("/:questionId", questionController.getQuestionByQuestionId);
+questionRouter.get("/users/:userId", questionController.getQuestionByUserId);
+
+questionRouter.post("/", questionController.createQuestions);
+questionRouter.patch("/:questionId", questionController.editQuestionByQuestionId);
+questionRouter.delete("/:questionId", questionController.deleteQuestionByQuestionId);
+
+module.exports = questionRouter;
