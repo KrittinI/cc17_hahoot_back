@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 const createError = require('../utils/create-error');
 const jwtService = require('../services/jwt-services');
+const userService = require('../services/user-service');
 // const userService = require('../services/user-service');
 
 const authenticate = async (req, res, next) => {
@@ -17,7 +18,6 @@ const authenticate = async (req, res, next) => {
         if (!user) {
             createError(400, "user not found")
         }
-        delete user.password
         req.user = user
         next()
     } catch (error) {
