@@ -9,6 +9,7 @@ const authenticate = require('./src/middlewares/authenticate')
 const userRouter = require('./src/routes/user-route')
 const questionRouter = require('./src/routes/question-route')
 const eventRouter = require('./src/routes/event-route')
+const topicRoute = require('./src/routes/topic-route')
 
 const app = express()
 
@@ -20,7 +21,8 @@ app.use(express.urlencoded({ extended: false }))
 app.use('/auth', authRoute)
 app.use('/users', authenticate, userRouter)
 app.use('/questions', authenticate, questionRouter)
-app.use('/events', eventRouter)
+app.use('/events', authenticate, eventRouter)
+app.use('/topics', authenticate, topicRoute)
 
 
 app.use(notFoundMiddleware)
