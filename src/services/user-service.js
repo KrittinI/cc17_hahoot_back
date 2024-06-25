@@ -5,6 +5,7 @@ const userFilter = {
     email: true,
     username: true,
     profileImage: true,
+    googleImage: true,
     isActive: true,
     isAdmin: true
 

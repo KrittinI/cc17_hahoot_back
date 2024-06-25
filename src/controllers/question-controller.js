@@ -68,7 +68,7 @@ questionController.getFavQuestionByAuthId = async (req, res, next) => {
 questionController.createQuestions = async (req, res, next) => {
   try {
     const { questions } = req.body;
-    // const question = await questionService.createQuestions(questions);
+    await questionService.createQuestions(questions);
     res.status(200).json({ questions });
   } catch (err) {
     next(err);
@@ -78,12 +78,30 @@ questionController.createQuestions = async (req, res, next) => {
 questionController.editQuestionByQuestionId = async (req, res, next) => {
   try {
     const { questionId } = req.params;
+    const question = { ...req.body }
+    console.log(question);
+    if (!question.question || !question.choice1 || !question.choice2 || !question.answer) {
+      createError(400, "invalid question")
+    }
+
+    if (question.answer === "C" && !question.choice3) {
+      createError(400, "invalid question")
+    }
+
+    if (question.answer === "D" && !question.choice4 || !question.choice3) {
+      createError(400, "invalid question")
+    }
+
+    const existedTopic = await topicService.findTopicById(+question.topicId)
+    if (!existedTopic) {
+      createError(400, "topic not found")
+    }
     const existedQuestion = await questionService.getQuestionByQuestionId(+questionId);
     if (!existedQuestion) {
-      createError(500, "this question id does not exist");
+      createError(400, "this question id does not exist");
     }
-    const question = await questionService.editQuestionByQuestionId(existedQuestion.id, req.body);
-    res.status(200).json({ question });
+    const updateQuestion = await questionService.editQuestionByQuestionId(existedQuestion.id, req.body);
+    res.status(200).json({ question: updateQuestion });
   } catch (err) {
     next(err);
   }
@@ -94,7 +112,7 @@ questionController.deleteQuestionByQuestionId = async (req, res, next) => {
     const { questionId } = req.params;
     const existedQuestion = await questionService.getQuestionByQuestionId(+questionId);
     if (!existedQuestion) {
-      createError(500, "this question id does not exist");
+      createError(400, "this question id does not exist");
     }
     const question = await questionService.deleteQuestionByQuestionId(existedQuestion.id);
     res.status(204).json({ question });

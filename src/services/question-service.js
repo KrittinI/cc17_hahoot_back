@@ -3,28 +3,72 @@ const prisma = require("../models/prisma");
 const questionService = {};
 
 questionService.getAllQuestion = () => {
-  return prisma.question.findMany();
+  return prisma.question.findMany({
+    // where: { isPublic: true },
+    include: {
+      creator: {
+        select: {
+          id: true,
+          username: true,
+          profileImage: true,
+          googleImage: true
+        }
+      },
+      topic: true,
+    }
+  });
 };
 
 questionService.getQuestionByTopicId = (topicId) => {
   return prisma.question.findMany({
     where: { topicId },
+    include: {
+      creator: {
+        select: {
+          id: true,
+          username: true,
+          profileImage: true,
+          googleImage: true
+        }
+      },
+      topic: true,
+    }
   });
 };
 
-questionService.getQuestionByQuestionId = (questionId) => {
+questionService.getQuestionByQuestionId = (id) => {
   return prisma.question.findFirst({
-    where: {
-      id: questionId,
-    },
+    where: { id },
+    include: {
+      creator: {
+        select: {
+          id: true,
+          username: true,
+          profileImage: true,
+          googleImage: true
+        }
+      },
+      topic: true,
+      questionComments: true,
+    }
   });
 };
 
-questionService.getQuestionByUserId = (userId) => {
+questionService.getQuestionByUserId = (creatorId) => {
   return prisma.question.findMany({
-    where: {
-      creatorId: userId,
-    },
+    where: { creatorId },
+    include: {
+      creator: {
+        select: {
+          id: true,
+          username: true,
+          profileImage: true,
+          googleImage: true
+        }
+      },
+      topic: true,
+      questionComments: true,
+    }
   });
 };
 

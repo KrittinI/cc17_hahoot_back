@@ -14,6 +14,6 @@ questionRouter.get("/users/:userId", questionController.getQuestionByUserId);
 
 questionRouter.post("/", checkQuestionMiddleware, questionController.createQuestions);
 questionRouter.patch("/:questionId", questionController.editQuestionByQuestionId);
-questionRouter.delete("/:questionId", questionController.deleteQuestionByQuestionId);
+// questionRouter.delete("/:questionId", questionController.deleteQuestionByQuestionId);
 
 module.exports = questionRouter;

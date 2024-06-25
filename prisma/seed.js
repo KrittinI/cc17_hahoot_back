@@ -27,11 +27,11 @@ const topicData = [
 
 
 const run = async () => {
-    await prisma.topic.createMany({ data: userData })
+    await prisma.user.createMany({ data: userData })
     await prisma.topic.createMany({ data: topicData })
 }
 
-// run()
+run()
 
 const runadmin = async () => {
     await prisma.user.createMany({ data: userData })
