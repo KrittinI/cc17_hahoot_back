@@ -19,7 +19,6 @@ const authenticate = async (req, res, next) => {
       createError(400, "user not found");
     }
     req.user = user;
-    console.log(req.user);
     next();
   } catch (error) {
     next(error);

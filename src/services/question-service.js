@@ -3,15 +3,15 @@ const prisma = require("../models/prisma");
 const questionService = {};
 
 questionService.getAllQuestion = () => {
-  return prisma.question.findMany({});
+  return prisma.question.findMany();
 };
+
 questionService.getQuestionByTopicId = (topicId) => {
   return prisma.question.findMany({
-    where: {
-      topicId: topicId,
-    },
+    where: { topicId },
   });
 };
+
 questionService.getQuestionByQuestionId = (questionId) => {
   return prisma.question.findFirst({
     where: {
@@ -27,6 +27,7 @@ questionService.getQuestionByUserId = (userId) => {
     },
   });
 };
+
 questionService.getFavQuestionByAuthId = (authId) => {
   console.log(authId, "auth");
   return prisma.questionFavorite.findMany({
@@ -41,6 +42,7 @@ questionService.createQuestions = (questions) => {
     data: questions,
   });
 };
+
 questionService.editQuestionByQuestionId = (questionId, newInfo) => {
   return prisma.question.update({
     where: {
@@ -49,6 +51,7 @@ questionService.editQuestionByQuestionId = (questionId, newInfo) => {
     data: newInfo,
   });
 };
+
 questionService.deleteQuestionByQuestionId = (questionId) => {
   return prisma.question.delete({
     where: {
