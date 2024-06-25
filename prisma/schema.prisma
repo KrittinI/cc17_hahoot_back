@@ -20,13 +20,15 @@ model Verify {
 }
 
 model User {
-  id           Int     @id @default(autoincrement())
-  email        String  @unique
-  password     String  @db.VarChar(100)
-  username     String? @unique @db.VarChar(100)
-  isAdmin      Boolean @default(false) @map("is_admin")
-  profileImage String? @map("profile_image")
-  isActive     Boolean @default(false) @map("is_active")
+  id             Int     @id @default(autoincrement())
+  email          String  @unique
+  password       String? @db.VarChar(100)
+  googlePassword String? @map("google_password ") @db.VarChar(100)
+  username       String? @unique @db.VarChar(100)
+  isAdmin        Boolean @default(false) @map("is_admin")
+  profileImage   String? @map("profile_image")
+  googleImage    String? @map(" google_image")
+  isActive       Boolean @default(false) @map("is_active")
 
   events            Event[]
   EventComments     EventComment[]
@@ -44,13 +46,11 @@ model Event {
   dueDate     DateTime @map("due_date") @db.Timestamp(5)
   timeLimit   Int      @map("time_limit")
   creatorId   Int      @map("creator_id")
-  questionId  Int      @map("question_id")
   topicId     Int      @map("topic_id")
   isPublic    Boolean  @default(false)
 
   user            User             @relation(fields: [creatorId], references: [id])
   topic           Topic            @relation(fields: [topicId], references: [id])
-  question        AssignOfBridge   @relation(name: "question", fields: [questionId], references: [id])
   participants    Participant[]
   assignOfBridges AssignOfBridge[]
   EventComments   EventComment[]
@@ -77,7 +77,6 @@ model AssignOfBridge {
   event           Event            @relation(fields: [eventId], references: [id])
   question        Question         @relation(fields: [questionId], references: [id])
   AnswerOfBridges AnswerOfBridge[]
-  events          Event[]          @relation(name: "question")
 
   @@map("assign_of_bridge")
 }
