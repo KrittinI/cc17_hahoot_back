@@ -8,7 +8,7 @@ questionService.getAllQuestion = () => {
 questionService.getQuestionByTopicId = (topicId) => {
   return prisma.question.findMany({
     where: {
-      topic_id: topicId,
+      topicId: topicId,
     },
   });
 };
