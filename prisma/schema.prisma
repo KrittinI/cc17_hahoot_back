@@ -23,7 +23,7 @@ model User {
   id             Int     @id @default(autoincrement())
   email          String  @unique
   password       String? @db.VarChar(100)
-  googlePassword String? @map("google_password ") @db.VarChar(100)
+  googlePassword String? @map("google_password") @db.VarChar(100)
   username       String? @unique @db.VarChar(100)
   isAdmin        Boolean @default(false) @map("is_admin")
   profileImage   String? @map("profile_image")
