@@ -24,6 +24,7 @@ const registerSchema = Joi.object({
       "string.empty": "Confirm password is not allowed to be empty.",
     })
     .strip(),
+  profileImage: Joi.string()
 });
 
 const validateRegister = (input) => {

@@ -16,8 +16,6 @@ eventController.getAllEvent = async (req, res, next) => {
 eventController.getEventByTopic = async (req, res, next) => {
     try {
         const { topicId } = req.params
-        console.log(topicId);
-
         const existedTopic = await topicService.findTopicById(+topicId)
         if (!existedTopic) {
             createError(400, "Not found topic")
@@ -53,7 +51,7 @@ eventController.getEventByUserId = async (req, res, next) => {
 eventController.getEventById = async (req, res, next) => {
     try {
         const { eventId } = req.params
-        const events = await eventService.findEventById(+eventId)
+        const events = await eventService.findEventById(eventId)
         if (!events) {
             createError(400, "event not found")
         }
