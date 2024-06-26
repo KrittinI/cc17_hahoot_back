@@ -3,30 +3,75 @@ const prisma = require("../models/prisma");
 const questionService = {};
 
 questionService.getAllQuestion = () => {
-  return prisma.question.findMany({});
-};
-questionService.getQuestionByTopicId = (topicId) => {
   return prisma.question.findMany({
-    where: {
-      topicId: topicId,
-    },
-  });
-};
-questionService.getQuestionByQuestionId = (questionId) => {
-  return prisma.question.findFirst({
-    where: {
-      id: questionId,
-    },
+    // where: { isPublic: true },
+    include: {
+      creator: {
+        select: {
+          id: true,
+          username: true,
+          profileImage: true,
+          googleImage: true
+        }
+      },
+      topic: true,
+    }
   });
 };
 
-questionService.getQuestionByUserId = (userId) => {
+questionService.getQuestionByTopicId = (topicId) => {
   return prisma.question.findMany({
-    where: {
-      creatorId: userId,
-    },
+    where: { topicId },
+    include: {
+      creator: {
+        select: {
+          id: true,
+          username: true,
+          profileImage: true,
+          googleImage: true
+        }
+      },
+      topic: true,
+    }
   });
 };
+
+questionService.getQuestionByQuestionId = (id) => {
+  return prisma.question.findFirst({
+    where: { id },
+    include: {
+      creator: {
+        select: {
+          id: true,
+          username: true,
+          profileImage: true,
+          googleImage: true
+        }
+      },
+      topic: true,
+      questionComments: true,
+    }
+  });
+};
+
+questionService.getQuestionByUserId = (creatorId) => {
+  return prisma.question.findMany({
+    where: { creatorId },
+    include: {
+      creator: {
+        select: {
+          id: true,
+          username: true,
+          profileImage: true,
+          googleImage: true
+        }
+      },
+      topic: true,
+      questionComments: true,
+    }
+  });
+};
+
 questionService.getFavQuestionByAuthId = (authId) => {
   console.log(authId, "auth");
   return prisma.questionFavorite.findMany({
@@ -41,6 +86,7 @@ questionService.createQuestions = (questions) => {
     data: questions,
   });
 };
+
 questionService.editQuestionByQuestionId = (questionId, newInfo) => {
   return prisma.question.update({
     where: {
@@ -49,6 +95,7 @@ questionService.editQuestionByQuestionId = (questionId, newInfo) => {
     data: newInfo,
   });
 };
+
 questionService.deleteQuestionByQuestionId = (questionId) => {
   return prisma.question.delete({
     where: {

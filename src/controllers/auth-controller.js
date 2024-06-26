@@ -18,9 +18,13 @@ authController.register = async (req, res, next) => {
         if (existEmail) {
             createError(400, "email already existed")
         }
-        data.password = await hashService.hash(data.password)
-        delete data.confirmPassword
-
+        if (data.password) {
+            data.password = await hashService.hash(data.password)
+        }
+        if (data.googlePassword) {
+            data.googlePassword = await hashService.hash(data.googlePassword)
+        }
+        // ------------------------- for not  using email verify ------------------------
         const result = await authService.createUser(data)
 
         // ------------------------- for using email verify ------------------------
@@ -71,15 +75,23 @@ authController.login = async (req, res, next) => {
     try {
         const data = req.body
         validateLogin(data)
-
+        console.log(data);
         const existUser = await authService.findUserByEmail(data.email)
         if (!existUser) {
             createError(400, "Email or password is incorrect")
         }
+        if (data.password) {
+            const isMathch = await hashService.compare(data.password, existUser.password)
+            if (!isMathch) {
+                createError(400, "Email or password is incorrect")
+            }
+        }
 
-        const isMathch = await hashService.compare(data.password, existUser.password)
-        if (!isMathch) {
-            createError(400, "Email or password is incorrect")
+        if (data.googlePassword) {
+            const isMathch = await hashService.compare(data.googlePassword, existUser.googlePassword)
+            if (!isMathch) {
+                createError(400, "Email or password is incorrect")
+            }
         }
 
         const accessToken = jwtService.sign({ id: existUser.id })
