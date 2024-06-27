@@ -1,3 +1,4 @@
+const favoriteService = require("../services/favorite-service");
 const questionService = require("../services/question-service");
 const topicService = require("../services/topic-service");
 const userService = require("../services/user-service");
@@ -7,7 +8,7 @@ const questionController = {};
 
 questionController.getAllQuestion = async (req, res, next) => {
   try {
-    const allQuestion = await questionService.getAllQuestion();
+    const allQuestion = await questionService.getAllQuestion(req.user.id);
     res.status(200).json({ questions: allQuestion });
   } catch (err) {
     next(err);
@@ -21,7 +22,7 @@ questionController.getQuestionByTopicId = async (req, res, next) => {
     if (!topicExisted) {
       createError(400, "topicId does not exist");
     }
-    const questionInTopic = await questionService.getQuestionByTopicId(topicExisted.id);
+    const questionInTopic = await questionService.getQuestionByTopicId(topicExisted.id, req.user.id);
     res.status(200).json({ questions: questionInTopic });
   } catch (err) {
     next(err);
@@ -31,7 +32,7 @@ questionController.getQuestionByTopicId = async (req, res, next) => {
 questionController.getQuestionByQuestionId = async (req, res, next) => {
   try {
     const { questionId } = req.params;
-    const question = await questionService.getQuestionByQuestionId(+questionId);
+    const question = await questionService.getQuestionByQuestionId(+questionId, req.user.id);
     if (!question) {
       createError(400, "this question Id does not exist");
     }
@@ -57,9 +58,10 @@ questionController.getQuestionByUserId = async (req, res, next) => {
 
 questionController.getFavQuestionByAuthId = async (req, res, next) => {
   try {
-    // const { id } = req.user;
-    // const questions = await questionService.getFavQuestionByAuthId(+id);
-    // res.status(200).json({ questions });
+    const questionsId = await favoriteService.findQuestionRelationByUserId(req.user.id)
+    const questionArr = questionsId.map(question => question.questionId)
+    const questions = await questionService.getQuestionByArr(questionArr)
+    res.status(200).json({ questions });
   } catch (err) {
     next(err);
   }
