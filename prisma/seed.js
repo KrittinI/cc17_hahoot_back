@@ -201,7 +201,13 @@ const sportsQuestion = [
         choice1: "TRUE", choice2: "FALSE", answer: "A", isPublic: false, topicId: 4, creatorId: 1
     },
 ]
-
+// topic 5 Movie
+const sciecneQuestion = [
+    {
+        question: ``,
+        choice1: "", choice2: "", choice3: "", choice4: "", answer: "", isPublic: false, topicId: 5, creatorId: 1
+    },
+]
 // topic 6 Manga
 const mangaQuestion = [
     {
@@ -242,6 +248,89 @@ const mangaQuestion = [
         choice1: "อาคิระ โทริยามะ (Akira Toriyama)", choice2: "ยูสุเกะ มูราตะ (Yusuke Murata)", choice3: "ทาเคชิ โอบาตะ (Takeshi Obata)", choice4: "เออิจิโร โอดะ (Eiichiro Oda)", answer: "B", isPublic: false, topicId: 6, creatorId: 1
     },
 ]
+// topic 7 Movie
+const movieQuestion = [
+    {
+        question: `Avengers: Infinity War
+How many possibilities that Dr.Strange see to fight with Tanos?`, questionPicture: `https://static1.srcdn.com/wordpress/wp-content/uploads/2019/03/Doctor-Strange-seeing-the-future-in-Avengers-Infinity-War.jpg`,
+        choice1: "14000605", choice2: "1", choice3: "3000", choice4: "14605000", answer: "A", isPublic: false, topicId: 7, creatorId: 1
+    },
+    {
+        question: `Avengers: End Game
+What does Iron Man said?`, questionPicture: `https://images.indianexpress.com/2022/03/robert-downey-jr-1200.jpg?w=414`,
+        choice1: "Hale Hydra", choice2: "I am Iron Man", choice3: "I love you 3000", choice4: "Take the stairs, HATE stairs!!", answer: "B", isPublic: false, topicId: 7, creatorId: 1
+    },
+    {
+        question: `Fast and Furious
+Which charactor that Paul Walker act?`,
+        choice1: "Roman Pearce", choice2: "Domic Toretto", choice3: "Luke Hobbs", choice4: "Brian O'Corner", answer: "D", isPublic: false, topicId: 7, creatorId: 1
+    },
+    {
+        question: `Harry Potter
+What is the spell to lift things?`,
+        choice1: "Alohomora", choice2: "Stupefy ", choice3: "Wingardium Leviosa", choice4: "Expecto patronum", answer: "C", isPublic: false, topicId: 7, creatorId: 1
+    },
+    {
+        question: `Harry Potter
+How many Horcrux that Lord Voldemort created? `,
+        choice1: "5", choice2: "6", choice3: "7", choice4: "10", answer: "D", isPublic: false, topicId: 7, creatorId: 1
+    },
+    {
+        question: `Conjuring 2
+Where was the case that happened in Conjuring 2?`,
+        choice1: "England", choice2: "USA", choice3: "Romania", choice4: "Canada", answer: "A", isPublic: false, topicId: 7, creatorId: 1
+    },
+    {
+        question: `Inside out
+What color of Sadness`,
+        choice1: "Yellow", choice2: "Green", choice3: "Red", choice4: "Blue", answer: "D", isPublic: false, topicId: 7, creatorId: 1
+    },
+]
+// topic 8 Geography
+const geographyQuestion = [
+    {
+        question: `What is the biggest country ?`,
+        choice1: "Russia", choice2: "China", choice3: "India", choice4: "Canada", answer: "A", isPublic: false, topicId: 8, creatorId: 1
+    },
+    {
+        question: `Which state in U.S.A have border only 1 state?`,
+        choice1: "Hawaii", choice2: "Alaska", choice3: "Maine", choice4: "Florida", answer: "C", isPublic: false, topicId: 8, creatorId: 1
+    },
+    {
+        question: `Where is Angel Waterfall?`, questionPicture: `https://upload.wikimedia.org/wikipedia/commons/e/e9/SaltoAngel1.jpg`,
+        choice1: "Brazil", choice2: "Columbia", choice3: "Venezuela", choice4: "Argentina", answer: "C", isPublic: false, topicId: 8, creatorId: 1
+    },
+    {
+        question: `The biggest ocean is Pacific Ocean ? `,
+        choice1: "TRUE", choice2: "FALSE", answer: "A", isPublic: false, topicId: 8, creatorId: 1
+    },
+]
+// topic 9 Music
+const musicQuestion = [
+    {
+        question: ``,
+        choice1: "", choice2: "", choice3: "", choice4: "", answer: "", isPublic: false, topicId: 9, creatorId: 1
+    },
+]
+// topic 10 Common
+const commonQuestion = [
+    {
+        question: `What is Capital City of Australia?`,
+        choice1: "Canberra", choice2: "Ottawa", choice3: "Oslo", choice4: "Jakarta", answer: "A", isPublic: false, topicId: 10, creatorId: 1
+    },
+    {
+        question: `What is Capital City of Indonesia?`,
+        choice1: "Canberra", choice2: "Ottawa", choice3: "Oslo", choice4: "Jakarta", answer: "D", isPublic: false, topicId: 10, creatorId: 1
+    },
+    {
+        question: `What is Capital City of Canada?`,
+        choice1: "Canberra", choice2: "Ottawa", choice3: "Oslo", choice4: "Jakarta", answer: "B", isPublic: false, topicId: 10, creatorId: 1
+    },
+    {
+        question: `What is Capital City of Norway?`,
+        choice1: "Canberra", choice2: "Ottawa", choice3: "Oslo", choice4: "Jakarta", answer: "C", isPublic: false, topicId: 10, creatorId: 1
+    },
+]
 
 
 const run = async () => {
@@ -252,6 +341,8 @@ const run = async () => {
     await prisma.question.createMany({ data: englishQuestion })
     await prisma.question.createMany({ data: sportsQuestion })
     await prisma.question.createMany({ data: mangaQuestion })
+    await prisma.question.createMany({ data: movieQuestion })
+
 
 }
 
@@ -265,7 +356,12 @@ const runQuestion = async () => {
     // await prisma.question.createMany({ data: codeQuestion })
     // await prisma.question.createMany({ data: englishQuestion })
     // await prisma.question.createMany({ data: sportsQuestion })
-    await prisma.question.createMany({ data: mangaQuestion })
+    // await prisma.question.createMany({ data: mangaQuestion })
+    // await prisma.question.createMany({ data: movieQuestion })
+    // await prisma.question.createMany({ data: sciecneQuestion })
+    // await prisma.question.createMany({ data: geographyQuestion })
+    // await prisma.question.createMany({ data: musicQuestion })
+    // await prisma.question.createMany({ data: commonQuestion })
 }
 
 // runadmin()
