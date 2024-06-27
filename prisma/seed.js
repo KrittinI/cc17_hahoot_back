@@ -204,8 +204,20 @@ const sportsQuestion = [
 // topic 5 Movie
 const sciecneQuestion = [
     {
-        question: ``,
-        choice1: "", choice2: "", choice3: "", choice4: "", answer: "", isPublic: false, topicId: 5, creatorId: 1
+        question: `Who perform this equation?`, questionPicture: `https://st2.depositphotos.com/2110015/10379/v/450/depositphotos_103793594-stock-illustration-mass-energy-equivalence.jpg`,
+        choice1: "Albert Einstein", choice2: "Thomas Alva Edison", choice3: "Sir Issac Newton", choice4: "Nikola Tesla", answer: "A", isPublic: false, topicId: 5, creatorId: 1
+    },
+    {
+        question: `Who found gravity?`,
+        choice1: "Albert Einstein", choice2: "Thomas Alva Edison", choice3: "Sir Issac Newton", choice4: "Nikola Tesla", answer: "C", isPublic: false, topicId: 5, creatorId: 1
+    },
+    {
+        question: `Who was developed light blub?`,
+        choice1: "Albert Einstein", choice2: "Thomas Alva Edison", choice3: "Sir Issac Newton", choice4: "Nikola Tesla", answer: "B", isPublic: false, topicId: 5, creatorId: 1
+    },
+    {
+        question: `Who was develeoped AC Current?`,
+        choice1: "Albert Einstein", choice2: "Thomas Alva Edison", choice3: "Sir Issac Newton", choice4: "Nikola Tesla", answer: "D", isPublic: false, topicId: 5, creatorId: 1
     },
 ]
 // topic 6 Manga
@@ -308,8 +320,24 @@ const geographyQuestion = [
 // topic 9 Music
 const musicQuestion = [
     {
-        question: ``,
-        choice1: "", choice2: "", choice3: "", choice4: "", answer: "", isPublic: false, topicId: 9, creatorId: 1
+        question: `Which song is in Album "Plus" from "Ed Sheeran" ?`,
+        choice1: "Bad Habits", choice2: "Shape of You", choice3: "LegoHouse", choice4: "Thinking out loud", answer: "C", isPublic: false, topicId: 9, creatorId: 1
+    },
+    {
+        question: `Which song is in Album "Multiply" from "Ed Sheeran" ?`,
+        choice1: "Bad Habits", choice2: "Shape of You", choice3: "LegoHouse", choice4: "Thinking out loud", answer: "D", isPublic: false, topicId: 9, creatorId: 1
+    },
+    {
+        question: `Which song is in Album "Devided" from "Ed Sheeran" ?`,
+        choice1: "Bad Habits", choice2: "Shape of You", choice3: "LegoHouse", choice4: "Thinking out loud", answer: "B", isPublic: false, topicId: 9, creatorId: 1
+    },
+    {
+        question: `Which song is in Album "Equal" from "Ed Sheeran" ?`,
+        choice1: "Bad Habits", choice2: "Shape of You", choice3: "LegoHouse", choice4: "Thinking out loud", answer: "A", isPublic: false, topicId: 9, creatorId: 1
+    },
+    {
+        question: `Which song is in Album "Substract" from "Ed Sheeran" ?`,
+        choice1: "Bad Habits", choice2: "Shape of You", choice3: "Boat", choice4: "Thinking out loud", answer: "C", isPublic: false, topicId: 9, creatorId: 1
     },
 ]
 // topic 10 Common
@@ -342,6 +370,10 @@ const run = async () => {
     await prisma.question.createMany({ data: sportsQuestion })
     await prisma.question.createMany({ data: mangaQuestion })
     await prisma.question.createMany({ data: movieQuestion })
+    await prisma.question.createMany({ data: sciecneQuestion })
+    await prisma.question.createMany({ data: geographyQuestion })
+    await prisma.question.createMany({ data: musicQuestion })
+    await prisma.question.createMany({ data: commonQuestion })
 
 
 }
