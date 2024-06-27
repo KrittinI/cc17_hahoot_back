@@ -1,3 +1,4 @@
+const hashService = require("../services/hash-service");
 const userService = require("../services/user-service");
 const createError = require("../utils/create-error");
 
@@ -33,6 +34,9 @@ userController.updateUserProfile = async (req, res, next) => {
             createError(400, "User not found")
         }
 
+        if (data.password) {
+            data.password = await hashService.hash(data.password)
+        }
         const updateUser = await userService.updateUser(existedUser.id, data)
 
         res.status(200).json({ user: updateUser })
