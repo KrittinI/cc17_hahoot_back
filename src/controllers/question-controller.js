@@ -6,6 +6,7 @@ const createError = require("../utils/create-error");
 
 const questionController = {};
 
+// GET ALL Question
 questionController.getAllQuestion = async (req, res, next) => {
   try {
     const allQuestion = await questionService.getAllQuestion(req.user.id);
@@ -15,6 +16,7 @@ questionController.getAllQuestion = async (req, res, next) => {
   }
 };
 
+// GET Question by Topic
 questionController.getQuestionByTopicId = async (req, res, next) => {
   try {
     const { topicId } = req.params;
@@ -29,6 +31,8 @@ questionController.getQuestionByTopicId = async (req, res, next) => {
   }
 };
 
+
+// GET Question by QuestionId
 questionController.getQuestionByQuestionId = async (req, res, next) => {
   try {
     const { questionId } = req.params;
@@ -42,6 +46,8 @@ questionController.getQuestionByQuestionId = async (req, res, next) => {
   }
 };
 
+
+// GET Question by UserId
 questionController.getQuestionByUserId = async (req, res, next) => {
   try {
     const { userId } = req.params;
@@ -49,24 +55,26 @@ questionController.getQuestionByUserId = async (req, res, next) => {
     if (!existUser) {
       createError(500, "this userId is not found");
     }
-    const questions = await questionService.getQuestionByUserId(existUser.id);
+    const questions = await questionService.getQuestionByUserId(existUser.id, req.user.id);
     res.status(200).json({ questions });
   } catch (err) {
     next(err);
   }
 };
 
+// GET Question by Favorite
 questionController.getFavQuestionByAuthId = async (req, res, next) => {
   try {
     const questionsId = await favoriteService.findQuestionRelationByUserId(req.user.id)
     const questionArr = questionsId.map(question => question.questionId)
-    const questions = await questionService.getQuestionByArr(questionArr)
+    const questions = await questionService.getQuestionByArr(questionArr, req.user.id)
     res.status(200).json({ questions });
   } catch (err) {
     next(err);
   }
 };
 
+// POST Create Question
 questionController.createQuestions = async (req, res, next) => {
   try {
     const { questions } = req.body;
@@ -77,6 +85,7 @@ questionController.createQuestions = async (req, res, next) => {
   }
 };
 
+// PATCH Edit Question
 questionController.editQuestionByQuestionId = async (req, res, next) => {
   try {
     const { questionId } = req.params;
@@ -109,6 +118,8 @@ questionController.editQuestionByQuestionId = async (req, res, next) => {
   }
 };
 
+
+// DELETE Delete Question
 questionController.deleteQuestionByQuestionId = async (req, res, next) => {
   try {
     const { questionId } = req.params;

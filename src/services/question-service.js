@@ -63,7 +63,7 @@ questionService.getQuestionByQuestionId = (id, userId) => {
   });
 };
 
-questionService.getQuestionByUserId = (creatorId) => {
+questionService.getQuestionByUserId = (creatorId, userId) => {
   return prisma.question.findMany({
     where: { creatorId },
     include: {
@@ -77,13 +77,13 @@ questionService.getQuestionByUserId = (creatorId) => {
       },
       topic: true,
       QuestionFavorite: {
-        where: { userId: creatorId }
+        where: { userId: userId }
       }
     }
   });
 };
 
-questionService.getQuestionByArr = (questionArr) => prisma.question.findMany({
+questionService.getQuestionByArr = (questionArr, userId) => prisma.question.findMany({
   where: { id: { in: questionArr } },
   include: {
     creator: {
@@ -95,8 +95,12 @@ questionService.getQuestionByArr = (questionArr) => prisma.question.findMany({
       }
     },
     topic: true,
+    QuestionFavorite: {
+      where: { userId }
+    }
   }
 })
+
 
 questionService.createQuestions = (questions) => {
   return prisma.question.createMany({
