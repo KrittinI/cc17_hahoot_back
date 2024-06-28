@@ -5,6 +5,7 @@ const createError = require("../utils/create-error")
 
 const eventController = {}
 
+// GET All Event
 eventController.getAllEvent = async (req, res, next) => {
     try {
         const events = await eventService.getAllEvent()
@@ -13,6 +14,8 @@ eventController.getAllEvent = async (req, res, next) => {
         next(error)
     }
 }
+
+// GET Event by Topic
 eventController.getEventByTopic = async (req, res, next) => {
     try {
         const { topicId } = req.params
@@ -27,6 +30,8 @@ eventController.getEventByTopic = async (req, res, next) => {
         next(error)
     }
 }
+
+// GET Event by Favorite
 eventController.getEvetnByFavorite = async (req, res, next) => {
     try {
 
@@ -34,6 +39,8 @@ eventController.getEvetnByFavorite = async (req, res, next) => {
         next(error)
     }
 }
+
+// GET Event by UserId
 eventController.getEventByUserId = async (req, res, next) => {
     try {
         const { userId } = req.params
@@ -48,6 +55,8 @@ eventController.getEventByUserId = async (req, res, next) => {
         next(error)
     }
 }
+
+// GET One Event 
 eventController.getEventById = async (req, res, next) => {
     try {
         const { eventId } = req.params
@@ -60,13 +69,35 @@ eventController.getEventById = async (req, res, next) => {
         next(error)
     }
 }
+
+// POST Create Event
 eventController.createEvent = async (req, res, next) => {
     try {
-        const data = req.body
+        const eventData = req.body.events
+        if (!eventData.eventName && !eventData.topicId) {
+            createError(400, "Event must have name, topic")
+        }
+
+        const existedTopic = await topicService.findTopicById(+eventData.topicId)
+        if (!existedTopic) {
+            createError(400, "topic not found")
+        }
+        eventData.topicId = existedTopic.id
+        if (eventData.timeLimit) {
+            eventData.timeLimit = +eventData.timeLimit
+        }
+
+        console.log(existedTopic);
+
+
+        console.log(eventData);
+        res.json({ events: eventData })
     } catch (error) {
         next(error)
     }
 }
+
+// PATCH Edit Event
 eventController.editEvent = async (req, res, next) => {
     try {
 
@@ -74,6 +105,8 @@ eventController.editEvent = async (req, res, next) => {
         next(error)
     }
 }
+
+// DELETE Delete Event
 eventController.deleteEvent = async (req, res, next) => {
     try {
 
