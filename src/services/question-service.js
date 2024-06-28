@@ -6,7 +6,7 @@ questionService.getAllQuestion = (userId) => {
   return prisma.question.findMany({
     // where: { isPublic: true },
     include: {
-      creator: {
+      user: {
         select: {
           id: true,
           username: true,
@@ -26,7 +26,7 @@ questionService.getQuestionByTopicId = (topicId, userId) => {
   return prisma.question.findMany({
     where: { topicId },
     include: {
-      creator: {
+      user: {
         select: {
           id: true,
           username: true,
@@ -46,7 +46,7 @@ questionService.getQuestionByQuestionId = (id, userId) => {
   return prisma.question.findFirst({
     where: { id },
     include: {
-      creator: {
+      user: {
         select: {
           id: true,
           username: true,
@@ -67,7 +67,7 @@ questionService.getQuestionByUserId = (creatorId, userId) => {
   return prisma.question.findMany({
     where: { creatorId },
     include: {
-      creator: {
+      user: {
         select: {
           id: true,
           username: true,
@@ -86,7 +86,7 @@ questionService.getQuestionByUserId = (creatorId, userId) => {
 questionService.getQuestionByArr = (questionArr, userId) => prisma.question.findMany({
   where: { id: { in: questionArr } },
   include: {
-    creator: {
+    user: {
       select: {
         id: true,
         username: true,
