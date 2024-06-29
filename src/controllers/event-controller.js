@@ -86,12 +86,15 @@ eventController.createEvent = async (req, res, next) => {
         if (eventData.timeLimit) {
             eventData.timeLimit = +eventData.timeLimit
         }
+        eventData.creatorId = req.user.id
 
-        console.log(existedTopic);
+        const events = await eventService.createEvent(eventData)
+
+        console.log(events);
 
 
         console.log(eventData);
-        res.json({ events: eventData })
+        res.json({ events: events })
     } catch (error) {
         next(error)
     }

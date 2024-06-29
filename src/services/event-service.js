@@ -27,4 +27,6 @@ eventService.findEventById = (id) => prisma.event.findFirst({
     where: { id }
 })
 
+eventService.createEvent = (data) => prisma.event.create({ data })
+
 module.exports = eventService
