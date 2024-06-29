@@ -5,6 +5,7 @@ const checkQuestionMiddleware = async (req, res, next) => {
     try {
         const data = [...req.body.questions]
         for (let question of data) {
+            if (question.id) continue;
             if (!question.question || !question.choice1 || !question.choice2 || !question.answer) {
                 createError(400, "invalid question")
             }

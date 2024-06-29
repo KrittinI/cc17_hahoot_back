@@ -2,6 +2,8 @@ const { Router } = require('express')
 const eventController = require('../controllers/event-controller')
 const favoriteController = require('../controllers/favorite-controller')
 const commentController = require('../controllers/comment-controller')
+const checkQuestionMiddleware = require('../middlewares/check-quesiton')
+const assignQuestionMiddleware = require('../middlewares/assign-qustion')
 
 const eventRouter = Router()
 
@@ -12,7 +14,7 @@ eventRouter.get('/favorite', eventController.getEvetnByFavorite)
 
 eventRouter.get('/:eventId', eventController.getEventById)
 
-eventRouter.post('/', eventController.createEvent)
+eventRouter.post('/', checkQuestionMiddleware, eventController.createEvent)
 eventRouter.patch('/:eventId', eventController.editEvent)
 eventRouter.delete('/:eventId', eventController.deleteEvent)
 
