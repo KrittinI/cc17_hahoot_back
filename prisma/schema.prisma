@@ -57,9 +57,10 @@ model Event {
 }
 
 model Room {
-  id           String @id @default(uuid())
-  eventId      Int    @map("event_id")
-  participanId String @map("participant_id")
+  id           String   @id @default(uuid())
+  eventId      Int      @map("event_id")
+  participanId String   @map("participant_id")
+  createdAt    DateTime @default(now()) @map("created_at") @db.DateTime()
 
   event      Event       @relation(fields: [eventId], references: [id])
   paticipant Participant @relation(fields: [participanId], references: [id])
