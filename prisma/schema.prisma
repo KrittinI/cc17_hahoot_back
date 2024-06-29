@@ -39,15 +39,14 @@ model User {
 }
 
 model Event {
-  id          Int      @id @default(autoincrement())
-  eventName   String   @map("event_name") @db.VarChar(100)
-  description String?  @db.Text
-  eventImage  String?  @map("event_image")
-  dueDate     DateTime @map("due_date") @db.Timestamp(5)
-  timeLimit   Int      @map("time_limit")
-  creatorId   Int      @map("creator_id")
-  topicId     Int      @map("topic_id")
-  isPublic    Boolean  @default(false)
+  id          Int     @id @default(autoincrement())
+  eventName   String  @map("event_name") @db.VarChar(100)
+  description String? @db.Text
+  eventImage  String? @map("event_image")
+  timeLimit   Int     @default(0) @map("time_limit")
+  creatorId   Int     @map("creator_id")
+  topicId     Int     @map("topic_id")
+  isPublic    Boolean @default(false)
 
   user            User             @relation(fields: [creatorId], references: [id])
   topic           Topic            @relation(fields: [topicId], references: [id])
@@ -79,9 +78,10 @@ model Participant {
 
 model AssignOfBridge {
   id         Int @id @default(autoincrement())
-  timeLimit  Int @map("time_limit")
+  timeLimit  Int @default(10) @map("time_limit")
   eventId    Int @map("event_id")
   questionId Int @map("question_id")
+  order      Int
 
   event           Event            @relation(fields: [eventId], references: [id])
   question        Question         @relation(fields: [questionId], references: [id])
