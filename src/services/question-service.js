@@ -2,45 +2,112 @@ const prisma = require("../models/prisma");
 
 const questionService = {};
 
-questionService.getAllQuestion = () => {
-  return prisma.question.findMany({});
-};
-questionService.getQuestionByTopicId = (topicId) => {
+questionService.getAllQuestion = (userId) => {
   return prisma.question.findMany({
-    where: {
-      topicId: topicId,
-    },
-  });
-};
-questionService.getQuestionByQuestionId = (questionId) => {
-  return prisma.question.findFirst({
-    where: {
-      id: questionId,
-    },
+    // where: { isPublic: true },
+    include: {
+      user: {
+        select: {
+          id: true,
+          username: true,
+          profileImage: true,
+          googleImage: true
+        }
+      },
+      topic: true,
+      QuestionFavorite: {
+        where: { userId }
+      }
+    }
   });
 };
 
-questionService.getQuestionByUserId = (userId) => {
+questionService.getQuestionByTopicId = (topicId, userId) => {
   return prisma.question.findMany({
-    where: {
-      creatorId: userId,
-    },
+    where: { topicId },
+    include: {
+      user: {
+        select: {
+          id: true,
+          username: true,
+          profileImage: true,
+          googleImage: true
+        }
+      },
+      topic: true,
+      QuestionFavorite: {
+        where: { userId }
+      }
+    }
   });
 };
-questionService.getFavQuestionByAuthId = (authId) => {
-  console.log(authId, "auth");
-  return prisma.questionFavorite.findMany({
-    where: {
-      userId: authId,
-    },
+
+questionService.getQuestionByQuestionId = (id, userId) => {
+  return prisma.question.findFirst({
+    where: { id },
+    include: {
+      user: {
+        select: {
+          id: true,
+          username: true,
+          profileImage: true,
+          googleImage: true
+        }
+      },
+      topic: true,
+      questionComments: true,
+      QuestionFavorite: {
+        where: { userId }
+      }
+    }
   });
 };
+
+questionService.getQuestionByUserId = (creatorId, userId) => {
+  return prisma.question.findMany({
+    where: { creatorId },
+    include: {
+      user: {
+        select: {
+          id: true,
+          username: true,
+          profileImage: true,
+          googleImage: true
+        },
+      },
+      topic: true,
+      QuestionFavorite: {
+        where: { userId: userId }
+      }
+    }
+  });
+};
+
+questionService.getQuestionByArr = (questionArr, userId) => prisma.question.findMany({
+  where: { id: { in: questionArr } },
+  include: {
+    user: {
+      select: {
+        id: true,
+        username: true,
+        profileImage: true,
+        googleImage: true
+      }
+    },
+    topic: true,
+    QuestionFavorite: {
+      where: { userId }
+    }
+  }
+})
+
 
 questionService.createQuestions = (questions) => {
   return prisma.question.createMany({
     data: questions,
   });
 };
+
 questionService.editQuestionByQuestionId = (questionId, newInfo) => {
   return prisma.question.update({
     where: {
@@ -49,6 +116,7 @@ questionService.editQuestionByQuestionId = (questionId, newInfo) => {
     data: newInfo,
   });
 };
+
 questionService.deleteQuestionByQuestionId = (questionId) => {
   return prisma.question.delete({
     where: {

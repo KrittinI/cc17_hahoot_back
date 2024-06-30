@@ -5,16 +5,25 @@ const userFilter = {
     email: true,
     username: true,
     profileImage: true,
+    googleImage: true,
     isActive: true,
     isAdmin: true
-
 }
 
 const userService = {}
 
 userService.findUserById = (id) => prisma.user.findFirst({
     where: { id },
-    select: userFilter
+    select: {
+        id: true,
+        email: true,
+        username: true,
+        profileImage: true,
+        googleImage: true,
+        isActive: true,
+        isAdmin: true,
+        password: true
+    }
 })
 
 // ต้องมาสร้างเพิ่มหลังจาก create event กับ create question เสร็จ

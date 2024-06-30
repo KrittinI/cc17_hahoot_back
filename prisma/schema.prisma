@@ -39,22 +39,31 @@ model User {
 }
 
 model Event {
-  id          String   @id @default(uuid())
-  eventName   String   @map("event_name") @db.VarChar(100)
-  description String?  @db.Text
-  eventImage  String?  @map("event_image")
-  dueDate     DateTime @map("due_date") @db.Timestamp(5)
-  timeLimit   Int      @map("time_limit")
-  creatorId   Int      @map("creator_id")
-  topicId     Int      @map("topic_id")
-  isPublic    Boolean  @default(false)
+  id          Int     @id @default(autoincrement())
+  eventName   String  @map("event_name") @db.VarChar(100)
+  description String? @db.Text
+  eventImage  String? @map("event_image")
+  timeLimit   Int     @default(0) @map("time_limit")
+  creatorId   Int     @map("creator_id")
+  topicId     Int     @map("topic_id")
+  isPublic    Boolean @default(false)
 
   user            User             @relation(fields: [creatorId], references: [id])
   topic           Topic            @relation(fields: [topicId], references: [id])
-  participants    Participant[]
   assignOfBridges AssignOfBridge[]
   EventComments   EventComment[]
   EventFavorites  EventFavorite[]
+  Room            Room[]
+}
+
+model Room {
+  id           String   @id @default(uuid())
+  eventId      Int      @map("event_id")
+  participanId String   @map("participant_id")
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamp(3)
+
+  event      Event       @relation(fields: [eventId], references: [id])
+  paticipant Participant @relation(fields: [participanId], references: [id])
 }
 
 model Participant {
@@ -62,17 +71,18 @@ model Participant {
   username      String @unique @db.VarChar(20)
   profileAvatar String @map("profile_avatar")
   raceTime      Int    @map("race_time")
-  eventId       String @map("event_id")
+  eventId       Int    @map("event_id")
 
-  event           Event            @relation(fields: [eventId], references: [id])
   AnswerOfBridges AnswerOfBridge[]
+  Room            Room[]
 }
 
 model AssignOfBridge {
-  id         Int    @id @default(autoincrement())
-  timeLimit  Int    @map("time_limit")
-  eventId    String @map("event_id")
-  questionId Int    @map("question_id")
+  id         Int @id @default(autoincrement())
+  timeLimit  Int @default(10) @map("time_limit")
+  eventId    Int @map("event_id")
+  questionId Int @map("question_id")
+  order      Int
 
   event           Event            @relation(fields: [eventId], references: [id])
   question        Question         @relation(fields: [questionId], references: [id])
@@ -99,7 +109,7 @@ model EventComment {
   rate    Int
   comment String? @db.Text
   userId  Int     @map("user_id")
-  eventId String  @map("event_id")
+  eventId Int     @map("event_id")
 
   user  User  @relation(fields: [userId], references: [id])
   event Event @relation(fields: [eventId], references: [id])
@@ -108,9 +118,9 @@ model EventComment {
 }
 
 model EventFavorite {
-  id      Int    @id @default(autoincrement())
-  userId  Int    @map("user_id")
-  eventId String @map("event_id")
+  id      Int @id @default(autoincrement())
+  userId  Int @map("user_id")
+  eventId Int @map("event_id")
 
   user  User  @relation(fields: [userId], references: [id])
   event Event @relation(fields: [eventId], references: [id])
@@ -140,7 +150,7 @@ model Question {
   creatorId       Int          @map("creator_id")
 
   topic            Topic              @relation(fields: [topicId], references: [id])
-  creator          User               @relation(fields: [creatorId], references: [id])
+  user             User               @relation(fields: [creatorId], references: [id])
   assignOfBridges  AssignOfBridge[]
   questionComments QuestionComment[]
   QuestionFavorite QuestionFavorite[]
