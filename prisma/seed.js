@@ -360,6 +360,55 @@ const commonQuestion = [
     },
 ]
 
+const eventList = [
+    { eventName: "Mathematics Question?", description: "Basic Math question", eventImage: "", topicId: 1, timeLimit: 30, creatorId: 1 },
+    { eventName: "Code Question?", description: "Basic Code question", eventImage: "", topicId: 2, timeLimit: 30, creatorId: 1 },
+    { eventName: "English Question?", description: "Basic English question", eventImage: "", topicId: 3, timeLimit: 30, creatorId: 1 },
+    { eventName: "Sports Question?", description: "Basic Sports question", eventImage: "", topicId: 4, timeLimit: 30, creatorId: 1 },
+    { eventName: "Manga Question?", description: "Basic Manga question", eventImage: "", topicId: 5, timeLimit: 30, creatorId: 1 },
+    { eventName: "Movie Question?", description: "Basic Movie question", eventImage: "", topicId: 6, timeLimit: 30, creatorId: 1 },
+    { eventName: "Science Question?", description: "Basic Science question", eventImage: "", topicId: 7, timeLimit: 30, creatorId: 1 },
+    { eventName: "Geography Question?", description: "Basic Geography question", eventImage: "", topicId: 8, timeLimit: 30, creatorId: 1 },
+    { eventName: "Music Question?", description: "Basic Music question", eventImage: "", topicId: 9, timeLimit: 30, creatorId: 1 },
+    { eventName: "Common Question?", description: "Basic Common question", eventImage: "", topicId: 10, timeLimit: 30, creatorId: 1 },
+]
+
+const assignList = [
+    { eventId: 1, questionId: 1, order: 1 }, { eventId: 1, questionId: 2, order: 2 }, { eventId: 1, questionId: 3, order: 3 },
+    { eventId: 1, questionId: 4, order: 4 }, { eventId: 1, questionId: 5, order: 5 }, { eventId: 1, questionId: 6, order: 6 },
+    { eventId: 1, questionId: 7, order: 7 }, { eventId: 1, questionId: 8, order: 8 }, { eventId: 1, questionId: 9, order: 9 }, { eventId: 1, questionId: 10, order: 10 },
+
+    { eventId: 2, questionId: 11, order: 1 }, { eventId: 2, questionId: 12, order: 2 }, { eventId: 2, questionId: 13, order: 3 },
+    { eventId: 2, questionId: 14, order: 4 }, { eventId: 2, questionId: 15, order: 5 }, { eventId: 2, questionId: 16, order: 6 },
+    { eventId: 2, questionId: 17, order: 7 }, { eventId: 2, questionId: 18, order: 8 }, { eventId: 2, questionId: 19, order: 9 }, { eventId: 2, questionId: 20, order: 10 },
+
+    { eventId: 3, questionId: 21, order: 1 }, { eventId: 3, questionId: 22, order: 2 }, { eventId: 3, questionId: 23, order: 3 },
+    { eventId: 3, questionId: 24, order: 4 }, { eventId: 3, questionId: 25, order: 5 }, { eventId: 3, questionId: 26, order: 6 },
+    { eventId: 3, questionId: 27, order: 7 }, { eventId: 3, questionId: 28, order: 8 }, { eventId: 3, questionId: 29, order: 9 }, { eventId: 3, questionId: 30, order: 10 },
+
+    { eventId: 4, questionId: 31, order: 1 }, { eventId: 4, questionId: 32, order: 2 }, { eventId: 4, questionId: 33, order: 3 },
+    { eventId: 4, questionId: 34, order: 4 }, { eventId: 4, questionId: 35, order: 5 }, { eventId: 4, questionId: 36, order: 6 },
+    { eventId: 4, questionId: 37, order: 7 }, { eventId: 4, questionId: 38, order: 8 }, { eventId: 4, questionId: 39, order: 9 }, { eventId: 4, questionId: 40, order: 10 },
+
+    { eventId: 5, questionId: 57, order: 1 }, { eventId: 5, questionId: 58, order: 2 }, { eventId: 5, questionId: 59, order: 3 },
+    { eventId: 5, questionId: 60, order: 4 },
+
+    { eventId: 6, questionId: 41, order: 1 }, { eventId: 6, questionId: 42, order: 2 }, { eventId: 6, questionId: 43, order: 3 },
+    { eventId: 6, questionId: 44, order: 4 }, { eventId: 6, questionId: 45, order: 5 }, { eventId: 6, questionId: 46, order: 6 },
+    { eventId: 6, questionId: 47, order: 7 }, { eventId: 6, questionId: 48, order: 8 }, { eventId: 6, questionId: 49, order: 9 },
+
+    { eventId: 7, questionId: 50, order: 1 }, { eventId: 7, questionId: 51, order: 2 }, { eventId: 7, questionId: 52, order: 3 },
+    { eventId: 7, questionId: 53, order: 4 }, { eventId: 7, questionId: 54, order: 5 }, { eventId: 7, questionId: 55, order: 6 }, { eventId: 7, questionId: 56, order: 7 },
+
+    { eventId: 8, questionId: 61, order: 1 }, { eventId: 8, questionId: 62, order: 2 }, { eventId: 8, questionId: 63, order: 3 },
+    { eventId: 8, questionId: 64, order: 4 },
+
+    { eventId: 9, questionId: 65, order: 1 }, { eventId: 9, questionId: 66, order: 2 }, { eventId: 9, questionId: 67, order: 3 },
+    { eventId: 9, questionId: 68, order: 4 }, { eventId: 9, questionId: 69, order: 5 },
+
+    { eventId: 10, questionId: 70, order: 1 }, { eventId: 10, questionId: 71, order: 2 }, { eventId: 10, questionId: 72, order: 3 },
+    { eventId: 10, questionId: 73, order: 4 },
+]
 
 const run = async () => {
     await prisma.user.createMany({ data: userData })
@@ -374,11 +423,9 @@ const run = async () => {
     await prisma.question.createMany({ data: geographyQuestion })
     await prisma.question.createMany({ data: musicQuestion })
     await prisma.question.createMany({ data: commonQuestion })
-
-
+    await prisma.event.createMany({ data: eventList })
+    await prisma.assignOfBridge.createMany({ data: assignList })
 }
-
-// run()
 
 const runadmin = async () => {
     await prisma.user.createMany({ data: userData })
@@ -396,5 +443,15 @@ const runQuestion = async () => {
     // await prisma.question.createMany({ data: commonQuestion })
 }
 
+const runEvent = async () => {
+    await prisma.event.createMany({ data: eventList })
+}
+
+const runAssign = async () => {
+    await prisma.assignOfBridge.createMany({ data: assignList })
+}
+// run()
 // runadmin()
-runQuestion()
+// runQuestion()
+// runEvent()
+runAssign()
