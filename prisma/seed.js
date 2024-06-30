@@ -450,8 +450,8 @@ const runEvent = async () => {
 const runAssign = async () => {
     await prisma.assignOfBridge.createMany({ data: assignList })
 }
-// run()
+run()
 // runadmin()
 // runQuestion()
 // runEvent()
-runAssign()
+// runAssign()
