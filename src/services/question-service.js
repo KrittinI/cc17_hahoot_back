@@ -2,11 +2,11 @@ const prisma = require("../models/prisma");
 
 const questionService = {};
 
-questionService.getAllQuestion = () => {
+questionService.getAllQuestion = (userId) => {
   return prisma.question.findMany({
     // where: { isPublic: true },
     include: {
-      creator: {
+      user: {
         select: {
           id: true,
           username: true,
@@ -15,15 +15,18 @@ questionService.getAllQuestion = () => {
         }
       },
       topic: true,
+      QuestionFavorite: {
+        where: { userId }
+      }
     }
   });
 };
 
-questionService.getQuestionByTopicId = (topicId) => {
+questionService.getQuestionByTopicId = (topicId, userId) => {
   return prisma.question.findMany({
     where: { topicId },
     include: {
-      creator: {
+      user: {
         select: {
           id: true,
           username: true,
@@ -32,15 +35,18 @@ questionService.getQuestionByTopicId = (topicId) => {
         }
       },
       topic: true,
+      QuestionFavorite: {
+        where: { userId }
+      }
     }
   });
 };
 
-questionService.getQuestionByQuestionId = (id) => {
+questionService.getQuestionByQuestionId = (id, userId) => {
   return prisma.question.findFirst({
     where: { id },
     include: {
-      creator: {
+      user: {
         select: {
           id: true,
           username: true,
@@ -50,36 +56,51 @@ questionService.getQuestionByQuestionId = (id) => {
       },
       topic: true,
       questionComments: true,
+      QuestionFavorite: {
+        where: { userId }
+      }
     }
   });
 };
 
-questionService.getQuestionByUserId = (creatorId) => {
+questionService.getQuestionByUserId = (creatorId, userId) => {
   return prisma.question.findMany({
     where: { creatorId },
     include: {
-      creator: {
+      user: {
         select: {
           id: true,
           username: true,
           profileImage: true,
           googleImage: true
-        }
+        },
       },
       topic: true,
-      questionComments: true,
+      QuestionFavorite: {
+        where: { userId: userId }
+      }
     }
   });
 };
 
-questionService.getFavQuestionByAuthId = (authId) => {
-  console.log(authId, "auth");
-  return prisma.questionFavorite.findMany({
-    where: {
-      userId: authId,
+questionService.getQuestionByArr = (questionArr, userId) => prisma.question.findMany({
+  where: { id: { in: questionArr } },
+  include: {
+    user: {
+      select: {
+        id: true,
+        username: true,
+        profileImage: true,
+        googleImage: true
+      }
     },
-  });
-};
+    topic: true,
+    QuestionFavorite: {
+      where: { userId }
+    }
+  }
+})
+
 
 questionService.createQuestions = (questions) => {
   return prisma.question.createMany({
