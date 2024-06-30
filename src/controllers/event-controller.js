@@ -88,14 +88,9 @@ eventController.createEvent = async (req, res, next) => {
         }
         eventData.creatorId = req.user.id
 
-        // console.log(eventData);
-        // const events = await eventService.createEvent(eventData)
-
-        const questionData = req.body.questions
-        // console.log(questionData);
-
-
-        res.json({ questions: questionData })
+        const events = await eventService.createEvent(eventData)
+        req.events = events
+        next()
     } catch (error) {
         next(error)
     }

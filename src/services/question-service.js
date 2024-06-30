@@ -101,7 +101,7 @@ questionService.getQuestionByArr = (questionArr, userId) => prisma.question.find
   }
 })
 
-questionService.createQuestion = (question) => prisma.question.create({ data: question })
+questionService.createOneQuestion = (question) => prisma.question.create({ data: question })
 
 questionService.createQuestions = (questions) => {
   return prisma.question.createMany({
