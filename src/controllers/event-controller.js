@@ -1,8 +1,11 @@
+const prisma = require("../models/prisma")
+const assignService = require("../services/assign-service")
 const eventService = require("../services/event-service")
 const favoriteService = require("../services/favorite-service")
 const topicService = require("../services/topic-service")
 const userService = require("../services/user-service")
 const createError = require("../utils/create-error")
+const assignController = require("./assign-controller")
 
 const eventController = {}
 
@@ -35,7 +38,6 @@ eventController.getEventByTopic = async (req, res, next) => {
 // GET Event by Favorite
 eventController.getEvetnByFavorite = async (req, res, next) => {
     try {
-        console.log(req.user.id);
         const eventsId = await favoriteService.findEventRelationByUserId(req.user.id)
         const events = eventsId.map(event => event.event)
         res.status(200).json({ events })
@@ -64,11 +66,20 @@ eventController.getEventByUserId = async (req, res, next) => {
 eventController.getEventById = async (req, res, next) => {
     try {
         const { eventId } = req.params
-        const events = await eventService.findEventById(+eventId)
+        const events = await eventService.findEventById(+eventId, req.user.id)
         if (!events) {
             createError(400, "event not found")
         }
-        res.status(200).json({ events })
+
+        const assigns = await assignService.findQuestionInEvent(events.id)
+        const questions = assigns.map(assign => {
+            const question = { ...assign.question }
+            question.timeLimit = assign.timeLimit
+            question.order = assign.order
+            return question
+        })
+
+        res.status(200).json({ events, questions })
     } catch (error) {
         next(error)
     }
@@ -78,7 +89,7 @@ eventController.getEventById = async (req, res, next) => {
 eventController.createEvent = async (req, res, next) => {
     try {
         const eventData = req.body.events
-        if (!eventData.eventName && !eventData.topicId) {
+        if (!eventData.eventName || !eventData.topicId) {
             createError(400, "Event must have name, topic")
         }
 
@@ -92,9 +103,8 @@ eventController.createEvent = async (req, res, next) => {
         }
         eventData.creatorId = req.user.id
 
-        const events = await eventService.createEvent(eventData)
-        req.events = events
-        next()
+        const { events, questions, assign } = await eventService.createEvent(req.body)
+        res.status(201).json({ events, questions, assign })
     } catch (error) {
         next(error)
     }
@@ -103,6 +113,28 @@ eventController.createEvent = async (req, res, next) => {
 // PATCH Edit Event
 eventController.editEvent = async (req, res, next) => {
     try {
+        const { eventId } = req.params
+        const eventData = req.body.events
+        const existedEvent = await eventService.findEventById(+eventId)
+        if (existedEvent.creatorId !== req.user.id) {
+            createError(403, "no permission on this event")
+        }
+
+        if (!eventData.eventName || !eventData.topicId) {
+            createError(400, "Event must have name, topic")
+        }
+
+        const existedTopic = await topicService.findTopicById(+eventData.topicId)
+        if (!existedTopic) {
+            createError(400, "topic not found")
+        }
+        eventData.topicId = existedTopic.id
+        if (eventData.timeLimit) {
+            eventData.timeLimit = +eventData.timeLimit
+        }
+
+        const updateEvent = await eventService.updateEvent(+eventId, req.body)
+        res.status(200).json(updateEvent)
 
     } catch (error) {
         next(error)

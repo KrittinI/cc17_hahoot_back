@@ -1,4 +1,3 @@
-const { event, question } = require("../models/prisma");
 const assignService = require("../services/assign-service");
 const questionService = require("../services/question-service");
 
