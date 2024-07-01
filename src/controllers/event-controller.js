@@ -1,4 +1,5 @@
 const eventService = require("../services/event-service")
+const favoriteService = require("../services/favorite-service")
 const topicService = require("../services/topic-service")
 const userService = require("../services/user-service")
 const createError = require("../utils/create-error")
@@ -8,7 +9,7 @@ const eventController = {}
 // GET All Event
 eventController.getAllEvent = async (req, res, next) => {
     try {
-        const events = await eventService.getAllEvent()
+        const events = await eventService.getAllEvent(req.user.id)
         res.status(200).json({ events })
     } catch (error) {
         next(error)
@@ -24,7 +25,7 @@ eventController.getEventByTopic = async (req, res, next) => {
             createError(400, "Not found topic")
         }
 
-        const events = await eventService.findEventByTopicId(existedTopic.id)
+        const events = await eventService.findEventByTopicId(existedTopic.id, req.user.id)
         res.status(200).json({ events })
     } catch (error) {
         next(error)
@@ -34,7 +35,10 @@ eventController.getEventByTopic = async (req, res, next) => {
 // GET Event by Favorite
 eventController.getEvetnByFavorite = async (req, res, next) => {
     try {
-
+        console.log(req.user.id);
+        const eventsId = await favoriteService.findEventRelationByUserId(req.user.id)
+        const events = eventsId.map(event => event.event)
+        res.status(200).json({ events })
     } catch (error) {
         next(error)
     }
@@ -49,7 +53,7 @@ eventController.getEventByUserId = async (req, res, next) => {
             createError(400, "user not found")
         }
 
-        const events = await eventService.findEventByUserId(existedUser.id)
+        const events = await eventService.findEventByUserId(existedUser.id, req.user.id)
         res.status(200).json({ events })
     } catch (error) {
         next(error)
@@ -60,7 +64,7 @@ eventController.getEventByUserId = async (req, res, next) => {
 eventController.getEventById = async (req, res, next) => {
     try {
         const { eventId } = req.params
-        const events = await eventService.findEventById(eventId)
+        const events = await eventService.findEventById(+eventId)
         if (!events) {
             createError(400, "event not found")
         }

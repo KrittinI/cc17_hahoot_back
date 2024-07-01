@@ -13,14 +13,57 @@ const eventFilter = {
 
 const eventService = {}
 
-eventService.getAllEvent = () => prisma.event.findMany()
-
-eventService.findEventByTopicId = (topicId) => prisma.event.findMany({
-    where: { topicId }
+eventService.getAllEvent = (userId) => prisma.event.findMany({
+    include: {
+        user: {
+            select: {
+                id: true,
+                username: true,
+                profileImage: true,
+                googleImage: true
+            }
+        },
+        topic: true,
+        EventFavorites: {
+            where: { userId }
+        }
+    }
 })
 
-eventService.findEventByUserId = (creatorId) => prisma.event.findMany({
-    where: { creatorId }
+eventService.findEventByTopicId = (topicId, userId) => prisma.event.findMany({
+    where: { topicId },
+    include: {
+        user: {
+            select: {
+                id: true,
+                username: true,
+                profileImage: true,
+                googleImage: true
+            }
+        },
+        topic: true,
+        EventFavorites: {
+            where: { userId }
+        }
+    }
+})
+
+eventService.findEventByUserId = (creatorId, userId) => prisma.event.findMany({
+    where: { creatorId },
+    include: {
+        user: {
+            select: {
+                id: true,
+                username: true,
+                profileImage: true,
+                googleImage: true
+            }
+        },
+        topic: true,
+        EventFavorites: {
+            where: { userId }
+        }
+    }
 })
 
 eventService.findEventById = (id) => prisma.event.findFirst({
