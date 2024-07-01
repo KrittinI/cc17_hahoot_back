@@ -80,7 +80,8 @@ eventService.findEventById = (id, userId) => prisma.event.findFirst({
         topic: true,
         EventFavorites: {
             where: { userId }
-        }
+        },
+        EventComments: true
     }
 })
 
