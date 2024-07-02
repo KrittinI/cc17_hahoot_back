@@ -3,6 +3,7 @@ const questionController = require("../controllers/question-controller");
 const checkQuestionMiddleware = require("../middlewares/check-quesiton");
 const favoriteController = require("../controllers/favorite-controller");
 const commentController = require("../controllers/comment-controller");
+const upload = require("../middlewares/upload");
 
 const questionRouter = Router();
 
@@ -13,8 +14,8 @@ questionRouter.get("/favorite", questionController.getFavQuestionByAuthId);
 
 questionRouter.get("/:questionId", questionController.getQuestionByQuestionId);
 
-questionRouter.post("/", checkQuestionMiddleware, questionController.createQuestions);
-questionRouter.patch("/:questionId", questionController.editQuestionByQuestionId);
+questionRouter.post("/", upload.single("questionPicture"), checkQuestionMiddleware, questionController.createQuestions);
+questionRouter.patch("/:questionId", upload.single("questionPicture"), questionController.editQuestionByQuestionId);
 // questionRouter.delete("/:questionId", questionController.deleteQuestionByQuestionId);
 
 // Favorite
