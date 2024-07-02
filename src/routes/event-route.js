@@ -3,8 +3,6 @@ const eventController = require('../controllers/event-controller')
 const favoriteController = require('../controllers/favorite-controller')
 const commentController = require('../controllers/comment-controller')
 const checkQuestionMiddleware = require('../middlewares/check-quesiton')
-const assignQuestionMiddleware = require('../middlewares/assign-qustion')
-const assignController = require('../controllers/assign-controller')
 
 const eventRouter = Router()
 

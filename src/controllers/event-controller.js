@@ -5,7 +5,6 @@ const favoriteService = require("../services/favorite-service")
 const topicService = require("../services/topic-service")
 const userService = require("../services/user-service")
 const createError = require("../utils/create-error")
-const assignController = require("./assign-controller")
 
 const eventController = {}
 
