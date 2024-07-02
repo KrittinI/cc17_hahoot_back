@@ -28,4 +28,5 @@ app.use(notFoundMiddleware);
 app.use(errorMiddleware);
 
 const PORT = process.env.PORT || 8800;
+console.log(process.env.DATABASE_URL);
 app.listen(PORT, () => console.log(`Server run on PORT ${PORT}`));
