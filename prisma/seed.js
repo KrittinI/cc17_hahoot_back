@@ -13,7 +13,7 @@ const userData = [
 ]
 
 const topicData = [
-    { topicName: "Mathematis" },
+    { topicName: "Mathematics" },
     { topicName: "Coding" },
     { topicName: "English" },
     { topicName: "Sports" },

@@ -1,3 +1,4 @@
+const eventService = require("../services/event-service");
 const favoriteService = require("../services/favorite-service");
 const questionService = require("../services/question-service");
 const createError = require("../utils/create-error");
@@ -47,17 +48,17 @@ favoriteController.unfavoriteQuestion = async (req, res, next) => {
 favoriteController.favoriteEvent = async (req, res, next) => {
     try {
         const { eventId } = req.params
-        const existedQuestion = await questionService.getQuestionByQuestionId(+eventId)
+        const existedQuestion = await eventService.findEventById(+eventId)
         if (!existedQuestion) {
             createError(400, "question not found")
         }
 
-        const existedFavorite = await favoriteService.findRelationByQuestionAndUserId(req.user.id, existedQuestion.id)
+        const existedFavorite = await favoriteService.findRelationByEventAndUserId(req.user.id, existedQuestion.id)
         if (existedFavorite) {
             createError(400, "already favorite this question")
         }
 
-        const result = await favoriteService.createFavorite(req.user.id, existedQuestion.id)
+        const result = await favoriteService.createEventFavorite(req.user.id, existedQuestion.id)
         res.status(201).json({ favorite: result })
     } catch (error) {
         next(error)
@@ -67,17 +68,17 @@ favoriteController.favoriteEvent = async (req, res, next) => {
 favoriteController.unfavoriteEvent = async (req, res, next) => {
     try {
         const { eventId } = req.params
-        const existedQuestion = await questionService.getQuestionByQuestionId(+eventId)
+        const existedQuestion = await eventService.findEventById(+eventId)
         if (!existedQuestion) {
             createError(400, "question not found")
         }
 
-        const existedFavorite = await favoriteService.findRelationByQuestionAndUserId(req.user.id, existedQuestion.id)
+        const existedFavorite = await favoriteService.findRelationByEventAndUserId(req.user.id, existedQuestion.id)
         if (!existedFavorite) {
             createError(400, "you not favorite this question")
         }
 
-        const result = await favoriteService.deleteFavorite(existedFavorite.id)
+        const result = await favoriteService.deleteEventFavorite(existedFavorite.id)
         res.status(204).json({ favorite: result })
     } catch (error) {
         next(error)
