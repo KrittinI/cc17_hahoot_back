@@ -14,7 +14,7 @@ const userData = [
 ];
 
 const topicData = [
-  { topicName: "Mathematis" },
+  { topicName: "Mathematics" },
   { topicName: "Coding" },
   { topicName: "English" },
   { topicName: "Sports" },
@@ -23,8 +23,8 @@ const topicData = [
   { topicName: "Movie" },
   { topicName: "Geography" },
   { topicName: "Music" },
-  { topicName: "Common" },
-];
+  { topicName: "Common" }
+]
 // topic 1 Math
 const mathQuestion = [
   {

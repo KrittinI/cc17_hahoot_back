@@ -65,9 +65,10 @@ questionController.getQuestionByUserId = async (req, res, next) => {
 // GET Question by Favorite
 questionController.getFavQuestionByAuthId = async (req, res, next) => {
   try {
-    const questionsId = await favoriteService.findQuestionRelationByUserId(req.user.id);
-    const questionArr = questionsId.map((question) => question.questionId);
-    const questions = await questionService.getQuestionByArr(questionArr, req.user.id);
+    const questionsId = await favoriteService.findQuestionRelationByUserId(req.user.id)
+    const questions = questionsId.map(question => question.question)
+    // const questionArr = questionsId.map(question => question.questionId)
+    // const questions = await questionService.getQuestionByArr(questionArr, req.user.id)
     res.status(200).json({ questions });
   } catch (err) {
     next(err);

@@ -17,8 +17,23 @@ favoriteService.deleteQuestionFavorite = (id) => prisma.questionFavorite.delete(
 
 favoriteService.findQuestionRelationByUserId = (userId) => prisma.questionFavorite.findMany({
     where: { userId },
-    select: {
-        questionId: true
+    include: {
+        question: {
+            include: {
+                user: {
+                    select: {
+                        id: true,
+                        username: true,
+                        profileImage: true,
+                        googleImage: true
+                    }
+                },
+                topic: true,
+                QuestionFavorite: {
+                    where: { userId }
+                }
+            }
+        }
     }
 })
 
@@ -38,8 +53,23 @@ favoriteService.deleteEventFavorite = (id) => prisma.eventFavorite.delete({
 
 favoriteService.findEventRelationByUserId = (userId) => prisma.eventFavorite.findMany({
     where: { userId },
-    select: {
-        questionId: true
+    include: {
+        event: {
+            include: {
+                user: {
+                    select: {
+                        id: true,
+                        username: true,
+                        profileImage: true,
+                        googleImage: true
+                    }
+                },
+                topic: true,
+                EventFavorites: {
+                    where: { userId }
+                }
+            }
+        }
     }
 })
 

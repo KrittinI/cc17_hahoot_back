@@ -1,5 +1,7 @@
 const commentController = {}
 
+
+// ---------------- For Question
 commentController.createCommentQuestion = async (req, res, next) => {
     try {
         console.log(req.params, 'comment question');
@@ -24,6 +26,7 @@ commentController.deleteCommentQuestion = async (req, res, next) => {
     }
 }
 
+// ---------------- For Event
 commentController.createCommentEvent = async (req, res, next) => {
     try {
         console.log(req.params, 'comment event');
