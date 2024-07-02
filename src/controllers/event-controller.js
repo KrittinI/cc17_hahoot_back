@@ -65,12 +65,12 @@ eventController.getEventByUserId = async (req, res, next) => {
 eventController.getEventById = async (req, res, next) => {
     try {
         const { eventId } = req.params
-        const events = await eventService.findEventById(+eventId, req.user.id)
-        if (!events) {
+        const event = await eventService.findEventById(+eventId, req.user.id)
+        if (!event) {
             createError(400, "event not found")
         }
 
-        const assigns = await assignService.findQuestionInEvent(events.id)
+        const assigns = await assignService.findQuestionInEvent(event.id)
         const questions = assigns.map(assign => {
             const question = { ...assign.question }
             question.timeLimit = assign.timeLimit
@@ -78,7 +78,7 @@ eventController.getEventById = async (req, res, next) => {
             return question
         })
 
-        res.status(200).json({ events, questions })
+        res.status(200).json({ event, questions })
     } catch (error) {
         next(error)
     }
@@ -102,8 +102,8 @@ eventController.createEvent = async (req, res, next) => {
         }
         eventData.creatorId = req.user.id
 
-        const { events, questions, assign } = await eventService.createEvent(req.body)
-        res.status(201).json({ events, questions, assign })
+        const { event, questions, assign } = await eventService.createEvent(req.body)
+        res.status(201).json({ event, questions, assign })
     } catch (error) {
         next(error)
     }
@@ -113,7 +113,7 @@ eventController.createEvent = async (req, res, next) => {
 eventController.editEvent = async (req, res, next) => {
     try {
         const { eventId } = req.params
-        const eventData = req.body.events
+        const eventData = req.body.event
         const existedEvent = await eventService.findEventById(+eventId)
         if (existedEvent.creatorId !== req.user.id) {
             createError(403, "no permission on this event")

@@ -88,7 +88,7 @@ eventService.findEventById = (id, userId) => prisma.event.findFirst({
 eventService.createEvent = (body) => prisma.$transaction(async (tx) => {
     const result = {}
     // *************************** Create New Event
-    const events = await tx.event.create({ data: body.events })
+    const event = await tx.event.create({ data: body.events })
 
     // *************************** Create New Question
     const assign = []
@@ -97,7 +97,7 @@ eventService.createEvent = (body) => prisma.$transaction(async (tx) => {
     let index = 1
     for (let question of data) {
         const assignData = {}
-        assignData.eventId = events.id
+        assignData.eventId = event.id
         assignData.order = index++
         if (!question.id) {
             const newQuestion = await tx.question.create({ data: question })
@@ -114,7 +114,7 @@ eventService.createEvent = (body) => prisma.$transaction(async (tx) => {
     // *************************** Create Assign Relation
     await tx.assignOfBridge.createMany({ data: assign })
 
-    result.events = events
+    result.event = event
     result.assign = assign
     result.questions = questions
     return result
