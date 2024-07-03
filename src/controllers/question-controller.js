@@ -67,8 +67,6 @@ questionController.getFavQuestionByAuthId = async (req, res, next) => {
   try {
     const questionsId = await favoriteService.findQuestionRelationByUserId(req.user.id)
     const questions = questionsId.map(question => question.question)
-    // const questionArr = questionsId.map(question => question.questionId)
-    // const questions = await questionService.getQuestionByArr(questionArr, req.user.id)
     res.status(200).json({ questions });
   } catch (err) {
     next(err);
@@ -79,16 +77,11 @@ questionController.getFavQuestionByAuthId = async (req, res, next) => {
 questionController.createQuestions = async (req, res, next) => {
   try {
     const { questions } = req.body;
-    const { id } = req.user;
-    console.log(id);
+    console.log(questions);
     await questionService.createQuestions(questions);
     res.status(200).json({ questions });
   } catch (err) {
     next(err);
-  } finally {
-    if (req.file.fieldname === "questionPicture") {
-      fs.unlink(req.file.path);
-    }
   }
 };
 
@@ -98,9 +91,6 @@ questionController.editQuestionByQuestionId = async (req, res, next) => {
   try {
     const { id } = req.user;
     const { questionId } = req.params;
-    if (!req.file) {
-      createError(400, "file not included");
-    }
     const path = await uploadService.upload(req.file.path);
     const question = { ...req.body, questionPicture: path };
     console.log(path, "pathhhh");
@@ -114,7 +104,7 @@ questionController.editQuestionByQuestionId = async (req, res, next) => {
       createError(400, "invalid question");
     }
 
-    if ((question.answer === "D" && !question.choice4) || !question.choice3) {
+    if (question.answer === "D" && (!input.choice3 || !input.choice4)) {
       createError(400, "invalid question");
     }
 

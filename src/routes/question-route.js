@@ -4,6 +4,7 @@ const checkQuestionMiddleware = require("../middlewares/check-quesiton");
 const favoriteController = require("../controllers/favorite-controller");
 const commentController = require("../controllers/comment-controller");
 const upload = require("../middlewares/upload");
+const cloudinaryController = require("../controllers/cloudinary-controller");
 
 const questionRouter = Router();
 
@@ -14,7 +15,7 @@ questionRouter.get("/favorite", questionController.getFavQuestionByAuthId);
 
 questionRouter.get("/:questionId", questionController.getQuestionByQuestionId);
 
-questionRouter.post("/", upload.single("questionPicture"), checkQuestionMiddleware, questionController.createQuestions);
+questionRouter.post("/", upload.array("questionImage"), cloudinaryController.uploadArray, checkQuestionMiddleware, questionController.createQuestions);
 questionRouter.patch("/:questionId", upload.single("questionPicture"), questionController.editQuestionByQuestionId);
 // questionRouter.delete("/:questionId", questionController.deleteQuestionByQuestionId);
 
