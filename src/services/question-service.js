@@ -105,7 +105,6 @@ questionService.getQuestionByArr = (questionArr, userId) =>
   });
 
 questionService.createQuestions = (questions) => {
-  console.log(questions);
   return prisma.question.createMany({
     data: questions,
   });

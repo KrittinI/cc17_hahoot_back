@@ -77,7 +77,6 @@ questionController.getFavQuestionByAuthId = async (req, res, next) => {
 questionController.createQuestions = async (req, res, next) => {
   try {
     const { questions } = req.body;
-    console.log(questions);
     await questionService.createQuestions(questions);
     res.status(200).json({ questions });
   } catch (err) {
