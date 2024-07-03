@@ -17,7 +17,7 @@ let rooms = {};
 
 const quizData = [
   {
-    question: "ตัวละครหลักในเรื่อง Naruto คือใคร?",
+    question: "ตัวละครหลักในเรื่อง Naruto คือใครXXXX?",
     options: [
       "Sasuke Uchiha",
       "Sakura Haruno",
@@ -25,6 +25,7 @@ const quizData = [
       "Kakashi Hatake",
     ],
     answer: "Naruto Uzumaki",
+    image: "src/assets/hh-hero.png",
   },
   {
     question: "ใครเป็นผู้แต่งเรื่อง One Piece?",
@@ -35,11 +36,13 @@ const quizData = [
       "Akira Toriyama",
     ],
     answer: "Eiichiro Oda",
+    image: "src/assets/hh-hero.png",
   },
   {
     question: "ชื่อจริงของ L ในเรื่อง Death Note คืออะไร?",
     options: ["Light Yagami", "Misa Amane", "L Lawliet", "Near"],
     answer: "L Lawliet",
+    image: "src/assets/hh-hero.png",
   },
 ];
 
@@ -68,12 +71,13 @@ io.on("connection", (socket) => {
     if (rooms[roomId]) {
       rooms[roomId].players.push({ id: socket.id, name, score: 0 });
       socket.join(roomId);
+      socket.emit("joinedRoom");
       io.to(roomId).emit(
         "updatePlayers",
         rooms[roomId].players.map((player) => player.name)
       );
     } else {
-      socket.emit("error", "Room not found");
+      socket.emit("roomNotFound"); // แจ้งเตือนเมื่อ Room ID ไม่ถูกพบ
     }
   });
 
@@ -142,7 +146,8 @@ const sendQuestion = (roomId) => {
     const questionData = {
       question: quizData[room.currentQuestionIndex].question,
       options: quizData[room.currentQuestionIndex].options,
-      answer: quizData[room.currentQuestionIndex].answer, // เพิ่มบรรทัดนี้เพื่อส่ง answer ไปด้วย
+      answer: quizData[room.currentQuestionIndex].answer,
+      image: quizData[room.currentQuestionIndex].image,
     };
     io.to(roomId).emit("newQuestion", questionData);
   }
