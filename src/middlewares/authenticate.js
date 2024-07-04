@@ -19,8 +19,8 @@ const authenticate = async (req, res, next) => {
       createError(400, "user not found");
     }
     if (user?.password !== null && user?.password !== "") {
-      delete user?.password
-    } else user.password = "firstLogin"
+      delete user?.password;
+    } else user.password = "firstLogin";
     req.user = user;
     next();
   } catch (error) {

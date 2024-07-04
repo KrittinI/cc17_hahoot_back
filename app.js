@@ -10,6 +10,8 @@ const userRouter = require("./src/routes/user-route");
 const questionRouter = require("./src/routes/question-route");
 const eventRouter = require("./src/routes/event-route");
 const topicRoute = require("./src/routes/topic-route");
+const adminRouter = require("./src/routes/admin-route");
+const adminValidate = require("./src/middlewares/admin-validator");
 
 const app = express();
 
@@ -23,6 +25,7 @@ app.use("/users", authenticate, userRouter);
 app.use("/questions", authenticate, questionRouter);
 app.use("/events", authenticate, eventRouter);
 app.use("/topics", authenticate, topicRoute);
+app.use("/admin", authenticate, adminValidate, adminRouter);
 
 app.use(notFoundMiddleware);
 app.use(errorMiddleware);
