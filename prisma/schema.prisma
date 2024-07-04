@@ -154,6 +154,11 @@ model Question {
   assignOfBridges  AssignOfBridge[]
   questionComments QuestionComment[]
   QuestionFavorite QuestionFavorite[]
+
+  Hero1 Hero[] @relation(name: "quiz1")
+  Hero2 Hero[] @relation(name: "quiz2")
+  Hero3 Hero[] @relation(name: "quiz3")
+  Hero4 Hero[] @relation(name: "quiz4")
 }
 
 model QuestionComment {
@@ -186,4 +191,23 @@ model Topic {
 
   questions Question[]
   events    Event[]
+}
+
+model Hero {
+  id           Int       @id @default(autoincrement())
+  title        String    @db.VarChar(100)
+  detail       String    @db.VarChar(256)
+  eventPicture String?   @map("event_picture")
+  icon         String?   @map("icon")
+  quiz1        Int       @map("question1_id")
+  quiz2        Int       @map("question2_id")
+  quiz3        Int       @map("question3_id")
+  quiz4        Int       @map("question4_id")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime? @updatedAt @map("updated_at")
+  isActive     Boolean   @default(true) @map("is_active")
+  question1    Question  @relation(name: "quiz1", fields: [quiz1], references: [id])
+  question2    Question  @relation(name: "quiz2", fields: [quiz2], references: [id])
+  question3    Question  @relation(name: "quiz3", fields: [quiz3], references: [id])
+  question4    Question  @relation(name: "quiz4", fields: [quiz4], references: [id])
 }
