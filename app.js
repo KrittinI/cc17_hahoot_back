@@ -85,7 +85,7 @@ io.on("connection", (socket) => {
     if (rooms[roomId] && rooms[roomId].owner === socket.id) {
       rooms[roomId].isGameStarted = true;
       io.to(roomId).emit("gameStarted");
-      //sendQuestion(roomId);
+      sendQuestion(roomId);
     }
   });
 
