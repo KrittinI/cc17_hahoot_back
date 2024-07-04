@@ -7,7 +7,7 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIo(server, {
   cors: {
-    origin: "*", // ปรับให้สอดคล้องกับการตั้งค่า CORS ของคุณ
+    origin: "*", // Adjust this to match your CORS settings
   },
 });
 
@@ -17,7 +17,7 @@ let rooms = {};
 
 const quizData = [
   {
-    question: "ตัวละครหลักในเรื่อง Naruto คือใครXXXX?",
+    question: "ตัวละครหลักในเรื่อง Naruto คือใคร?",
     options: [
       "Sasuke Uchiha",
       "Sakura Haruno",
@@ -77,7 +77,7 @@ io.on("connection", (socket) => {
         rooms[roomId].players.map((player) => player.name)
       );
     } else {
-      socket.emit("roomNotFound"); // แจ้งเตือนเมื่อ Room ID ไม่ถูกพบ
+      socket.emit("roomNotFound"); // Notify if room not found
     }
   });
 
@@ -96,7 +96,11 @@ io.on("connection", (socket) => {
       player.hasAnswered = true;
       room.answeredPlayers += 1;
 
-      const correct = answer === quizData[room.currentQuestionIndex].answer;
+      console.log("quizData = ", quizData[room.currentQuestionIndex].answer);
+      const correct = Boolean(
+        answer === quizData[room.currentQuestionIndex].answer
+      );
+      console.log(" correct = ", correct);
       if (correct) {
         player.score += 1;
       }
@@ -105,16 +109,19 @@ io.on("connection", (socket) => {
         answer: quizData[room.currentQuestionIndex].answer,
       });
 
-      if (room.answeredPlayers === room.players.length) {
+      // Check if all non-owner players have answered
+      const nonOwnerPlayers = room.players.filter((p) => p.id !== room.owner);
+      if (nonOwnerPlayers.every((p) => p.hasAnswered)) {
+        io.to(roomId).emit("showAnswer");
         room.answeredPlayers = 0;
         room.players.forEach((p) => (p.hasAnswered = false));
         room.currentQuestionIndex += 1;
 
-        if (room.currentQuestionIndex < quizData.length) {
-          setTimeout(() => sendQuestion(roomId), 3000);
-        } else {
-          io.to(roomId).emit("gameOver");
-        }
+        // if (room.currentQuestionIndex < quizData.length) {
+        //   setTimeout(() => sendQuestion(roomId), 3000);
+        // } else {
+        //   io.to(roomId).emit("gameOver");
+        // }
       }
     }
   });
