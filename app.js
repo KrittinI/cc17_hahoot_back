@@ -85,7 +85,7 @@ io.on("connection", (socket) => {
     if (rooms[roomId] && rooms[roomId].owner === socket.id) {
       rooms[roomId].isGameStarted = true;
       io.to(roomId).emit("gameStarted");
-      sendQuestion(roomId);
+      //sendQuestion(roomId);
     }
   });
 
@@ -115,7 +115,7 @@ io.on("connection", (socket) => {
         io.to(roomId).emit("showAnswer");
         room.answeredPlayers = 0;
         room.players.forEach((p) => (p.hasAnswered = false));
-        room.currentQuestionIndex += 1;
+        //room.currentQuestionIndex += 1;
 
         // if (room.currentQuestionIndex < quizData.length) {
         //   setTimeout(() => sendQuestion(roomId), 3000);
@@ -124,6 +124,14 @@ io.on("connection", (socket) => {
         // }
       }
     }
+  });
+
+  socket.on("connect_error", (err) => {
+    console.error("Connection error:", err);
+  });
+
+  socket.on("reconnect_attempt", () => {
+    console.log("Attempting to reconnect...");
   });
 
   socket.on("disconnect", () => {
