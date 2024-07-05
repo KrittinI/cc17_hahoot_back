@@ -19,7 +19,7 @@ const checkQuestionMiddleware = async (req, res, next) => {
         createError(400, "invalid question2");
       }
 
-      if (data[i].answer === "D" && (!input.choice3 || !input.choice4)) {
+      if (data[i].answer === "D" && (!data[i]?.choice3 || !data[i]?.choice4)) {
         uploadService.deleteArr(image)
         createError(400, "invalid question3");
       }
