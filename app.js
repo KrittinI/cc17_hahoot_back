@@ -12,6 +12,7 @@ const eventRouter = require("./src/routes/event-route");
 const topicRoute = require("./src/routes/topic-route");
 const adminRouter = require("./src/routes/admin-route");
 const adminValidate = require("./src/middlewares/admin-validator");
+const adminController = require("./src/controllers/adminController");
 
 const app = express();
 
@@ -26,6 +27,8 @@ app.use("/questions", authenticate, questionRouter);
 app.use("/events", authenticate, eventRouter);
 app.use("/topics", authenticate, topicRoute);
 app.use("/admin", authenticate, adminValidate, adminRouter);
+app.get("/hero/Active", adminController.getHeroByIsActive);
+
 
 app.use(notFoundMiddleware);
 app.use(errorMiddleware);

@@ -970,6 +970,63 @@ const assignList = [
   { eventId: 10, questionId: 73, order: 4 },
 ];
 
+
+const heroData = [
+  {
+    title: "We are Hahoot !", detail: `The walnut wood card tray is precision milled to perfectly fit a stack of Focus cards. The powder coated steel divider separates active cards from new ones, or can be used to archive important task lists.`,
+    quiz1: 1, quiz2: 21, quiz3: 31, quiz4: 41, isActive: true
+  },
+  {
+    title: "Hahoot Maths Days!", detail: `The National Mathematics Day is celebrated on 22nd December to celebrate the birthday of eminent mathematician Srinivasa Ramanujan. It was designated by the Indian Government in 2011. Despite his lack of formal education, Ramanujan is noted as one of the greatest mathematicians of all time. `,
+    quiz1: 1, quiz2: 2, quiz3: 3, quiz4: 4, isActive: false
+  },
+  {
+    title: "We are Develophoot !", detail: `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam a vestibulum dolor. Donec luctus neque ac odio vehicula, in congue enim volutpat. Nulla facilisi. Mauris eget ipsum ut urna feugiat lacinia ut sed metus. Vestibulum in feugiat erat. Nulla id tincidunt risus, et vestibulum est. Integer auctor velit nec urna malesuada, sed bibendum lacus suscipit. Morbi in rutrum tellus. Sed maximus rhoncus dolor quis viverra. Maecenas auctor rutrum pharetra. Ut sagittis nisl vel purus mattis gravida. Vestibulum imperdiet auctor nisl ut viverra. Quisque vulputate augue tristique, lacinia dui a, posuere purus. Nunc et quam ac leo congue dapibus. Donec aliquam sapien quis interdum hendrerit.`,
+    quiz1: 11, quiz2: 12, quiz3: 13, quiz4: 14, isActive: false
+  },
+  {
+    title: "We are Englishoot !", detail: `School is a vital part of our lives. It serves as a starting point for our general growth in addition to being a place to acquire reading and writing skills. It helps us learn about the world and moulds our personalities. It's the perfect starting point for our understanding of the real world. Schools are academic institutions where students are taught about various knowledge aspects. As a student, we are often told to write an essay or present a speech at my school. Speech on my school requires you to write some basic details and features of your school, how your life at school was or is, things you have learned there and what was the best part of your school life. Below we have discussed a 1-minute speech on my school for students with a paragraph and some lines that you can add to your speech on my school.`,
+    quiz1: 21, quiz2: 22, quiz3: 23, quiz4: 24, isActive: false
+  },
+  {
+    title: "Hahoot Sport's Day !", detail: `Germany coach Julian Nagelsmann says Spain's Lamine Yamal is a "talented" and "fun" player - but questioned whether the teenager can cope with the demands of a high stakes Euro 2024 quarter-final.
+
+The 16-year-old winger has provided two assists for Spain so far, just the third teenager on record (since 1980) to provide multiple assists in the competition after Enzo Scifo (1984) and Cristiano Ronaldo (2004).`,
+    quiz1: 31, quiz2: 32, quiz3: 33, quiz4: 34, isActive: false
+  },
+  {
+    title: "We are ScienceHoot !", detail: `Peace cannot be kept by force; it can only be achieved by understanding.
+
+Albert Einstein`,
+    quiz1: 57, quiz2: 58, quiz3: 59, quiz4: 60, isActive: false
+  },
+  {
+    title: "We are Anime fans !", detail: `“The strong should aid and protect the weak. Then, the weak will become strong, and they in turn will aid and protect those weaker than them. That is the law of nature.”—Tanjiro Kamado, Demon Slayer
+`,
+    quiz1: 41, quiz2: 42, quiz3: 43, quiz4: 44, isActive: false,
+    eventPicture: 'https://www.linearity.io/blog/content/images/2024/02/Quote-4.png'
+  },
+  {
+    title: "Hahoot in Cinema !", detail: `Peace cannot be kept by force; it can only be achieved by understanding.
+
+Albert Einstein`,
+    quiz1: 50, quiz2: 52, quiz3: 53, quiz4: 56, isActive: false
+  },
+  {
+    title: "Hahoot around the Worlds !", detail: `New Zealand's flora and fauna differs from every other large land-mass on earth due to its long isolation and uniqueness as a (near) mammal-free environment. The isolated species living here were affected dramatically around 800 years ago, when humans from Polynesia settled in New Zealand. Not long afterwards the first Europeans arrived and both, with the help of introduced pests, began to deplete species around them and clear vast tracts of land. They brought with them a multitude of mammalian pests. Still chewing the life out of our New Zealand bush, these pests are bringing about a grim ending to an almost inconceivably long history of unique and beautiful life.
+
+This trend continued into the early 1990's, when Wellington was in a biologically poor state with native flora and fauna in danger of local extinction and very little happening on the ground other than small-scale planting schemes. Drastic measures needed to be taken to ensure the survival of our species.
+
+ref: https://www.visitzealandia.com/About`,
+    quiz1: 61, quiz2: 62, quiz3: 63, quiz4: 64, isActive: false
+  },
+  {
+    title: "Ed Sheeran VS Hooter", detail: `"Everything will be okay in the end. If it's not okay, then it's not the end."
+― Ed Sheeran`,
+    quiz1: 65, quiz2: 66, quiz3: 67, quiz4: 68, isActive: false
+  },
+]
+
 const run = async () => {
   await prisma.user.createMany({ data: userData });
   await prisma.topic.createMany({ data: topicData });
@@ -1010,8 +1067,13 @@ const runEvent = async () => {
 const runAssign = async () => {
   await prisma.assignOfBridge.createMany({ data: assignList });
 };
-run();
+
+const runHero = async () => {
+  await prisma.hero.createMany({ data: heroData });
+};
+// run();
 // runadmin()
 // runQuestion()
 // runEvent()
 // runAssign()
+runHero()

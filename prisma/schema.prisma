@@ -196,7 +196,7 @@ model Topic {
 model Hero {
   id           Int       @id @default(autoincrement())
   title        String    @db.VarChar(100)
-  detail       String    @db.VarChar(256)
+  detail       String    @db.Text
   eventPicture String?   @map("event_picture")
   icon         String?   @map("icon")
   quiz1        Int       @map("question1_id")
