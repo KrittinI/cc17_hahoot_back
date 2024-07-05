@@ -143,8 +143,9 @@ io.on("connection", (socket) => {
         delete rooms[roomId];
       } else {
         if (room.owner === socket.id) {
-          room.owner = room.players[0].id;
-          io.to(room.owner).emit("isOwner");
+          //room.owner = room.players[0].id;
+          //io.to(room.owner).emit("isOwner");
+          io.to(roomId).emit("ownerDisconnected");
         }
         io.to(roomId).emit(
           "updatePlayers",
