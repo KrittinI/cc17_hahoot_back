@@ -3,6 +3,7 @@ const assignService = require("../services/assign-service");
 const eventService = require("../services/event-service");
 const favoriteService = require("../services/favorite-service");
 const topicService = require("../services/topic-service");
+const uploadService = require("../services/upload-service");
 const userService = require("../services/user-service");
 const createError = require("../utils/create-error");
 
@@ -88,6 +89,8 @@ eventController.getEventById = async (req, res, next) => {
 eventController.createEvent = async (req, res, next) => {
   try {
     const eventData = req.body;
+    console.log(req.file.path, "path");
+    const file = req.file.path;
     console.log(eventData, req.file);
     // const eventData = req.body.events;
     if (!eventData.eventName || !eventData.topicId) {
@@ -102,14 +105,43 @@ eventController.createEvent = async (req, res, next) => {
     if (eventData.timeLimit) {
       eventData.timeLimit = +eventData.timeLimit;
     }
+    const url = await uploadService.upload(file);
     eventData.creatorId = req.user.id;
 
-    const { event, questions, assign } = await eventService.createEvent(req.body);
-    res.status(201).json({ event, questions, assign });
+    const eventCreated = await eventService.createEvent({ ...req.body, eventImage: url });
+    console.log(req.body, url);
+    res.status(201).json({ eventCreated });
   } catch (error) {
     next(error);
   }
 };
+// eventController.createEvent = async (req, res, next) => {
+//   try {
+//     const eventData = req.body;
+//     const file = req.file.path;
+//     console.log(eventData, req.file);
+//     // const eventData = req.body.events;
+//     if (!eventData.eventName || !eventData.topicId) {
+//       createError(400, "Event must have name, topic");
+//     }
+
+//     const existedTopic = await topicService.findTopicById(+eventData.topicId);
+//     if (!existedTopic) {
+//       createError(400, "topic not found");
+//     }
+//     eventData.topicId = existedTopic.id;
+//     if (eventData.timeLimit) {
+//       eventData.timeLimit = +eventData.timeLimit;
+//     }
+//     const url = uploadService.upload(file);
+//     eventData.creatorId = req.user.id;
+
+//     const { event, questions, assign } = await eventService.createEvent(req.body);
+//     res.status(201).json({ event, questions, assign });
+//   } catch (error) {
+//     next(error);
+//   }
+// };
 
 // PATCH Edit Event
 eventController.editEvent = async (req, res, next) => {

@@ -17,7 +17,7 @@ eventRouter.get("/favorite", eventController.getEvetnByFavorite);
 eventRouter.get("/:eventId", eventController.getEventById);
 
 //----------------- For Another Method -----------------
-eventRouter.post("/", upload.single("eventPicture"), eventController.createEvent);
+eventRouter.post("/", upload.single("eventImage"), eventController.createEvent);
 eventRouter.patch("/:eventId", eventController.editEvent);
 eventRouter.delete("/:eventId", eventController.deleteEvent);
 
