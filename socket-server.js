@@ -1,17 +1,15 @@
-const express = require("express");
-const http = require("http");
-const socketIo = require("socket.io");
-const cors = require("cors");
+const { createServer } = require("http");
+const { Server } = require("socket.io");
 
-const app = express();
-const server = http.createServer(app);
-const io = socketIo(server, {
+// สร้าง HTTP server
+const server = createServer();
+
+// เริ่มต้น Socket.IO server
+const io = new Server(server, {
   cors: {
-    origin: "*", // Adjust this to match your CORS settings
+    origin: "*", // ปรับนี้ใน production ให้เป็น origin เฉพาะ
   },
 });
-
-app.use(cors());
 
 let rooms = {};
 
@@ -169,6 +167,8 @@ const sendQuestion = (roomId) => {
   }
 };
 
-server.listen(4000, () => {
-  console.log("Server is running on port 4000");
+// เริ่มเซิร์ฟเวอร์
+const PORT = process.env.PORT || 4000;
+server.listen(PORT, () => {
+  console.log(`Socket Server is running on port ${PORT}`);
 });
