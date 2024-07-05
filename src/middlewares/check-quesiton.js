@@ -3,39 +3,36 @@ const topicService = require("../services/topic-service");
 const uploadService = require("../services/upload-service");
 const createError = require("../utils/create-error");
 
+
 const checkQuestionMiddleware = async (req, res, next) => {
   try {
-    console.log(req.body, "checkkkkk‹");
-    // const data = [...req.body.questions];
-    console.log(req.file, "file");
-
-    //may be problem
-    const data = [{ ...req.body }];
-    console.log(data, "dataaaaa");
-
-    for (let question of data) {
-      console.log("logggggggggggggg");
-      if (!question.question || !question.choice1 || !question.choice2 || !question.answer) {
+    const data = JSON.parse(req.body.questions)
+    const image = req.pictures
+    for (let i in data) {
+      if (!data[i].question || !data[i].choice1 || !data[i].choice2 || !data[i].answer) {
+        uploadService.deleteArr(image)
         createError(400, "invalid question1");
       }
 
-      if (question.answer === "C" && !question.choice3) {
+      if (data[i].answer === "C" && !data[i].choice3) {
+        uploadService.deleteArr(image)
         createError(400, "invalid question2");
       }
 
-      if ((question.answer === "D" && !question.choice4) || !question.choice3) {
+      if (data[i].answer === "D" && (!input.choice3 || !input.choice4)) {
+        uploadService.deleteArr(image)
         createError(400, "invalid question3");
       }
 
-      const existedTopic = await topicService.findTopicById(+question.topicId);
+      const existedTopic = await topicService.findTopicById(+data[i].topicId);
       if (!existedTopic) {
+        uploadService.deleteArr(image)
         createError(400, "topic not found");
       }
-      const path = await uploadService.upload(req.file.path);
-      question.questionPicture = path;
-      question.isPublic = Boolean(question.isPublic);
-      question.topicId = +question.topicId;
-      question.creatorId = req.user.id;
+      data[i].questionPicture = image[i];
+      data[i].isPublic = Boolean(data[i].isPublic);
+      data[i].topicId = +data[i].topicId;
+      data[i].creatorId = req.user.id;
     }
     req.body.questions = data;
     next();

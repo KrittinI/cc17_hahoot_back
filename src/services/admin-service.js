@@ -3,15 +3,66 @@ const prisma = require("../models/prisma");
 const adminService = {};
 
 adminService.getAllUserProfile = () => {
-  return prisma.user.findMany({ where: { isAdmin: true }, include: { events: true, Questions: true } });
+  return prisma.user.findMany({
+    select: {
+      id: true,
+      username: true,
+      email: true,
+      isActive: true,
+      _count: {
+        select: {
+          events: true,
+          Questions: true
+        }
+      }
+    },
+
+  });
 };
 
 adminService.getAllEventList = () => {
-  return prisma.event.findMany({ include: { topic: true, user: true, assignOfBridges: { include: { question: true } } } });
+  return prisma.event.findMany({
+    select: {
+      id: true,
+      eventName: true,
+      user: {
+        select: {
+          username: true
+        }
+      },
+      topicId: true,
+      topic: {
+        select: {
+          topicName: true
+        }
+      },
+      _count: {
+        select: {
+          assignOfBridges: true
+        }
+      }
+    }
+  });
 };
 
 adminService.getAllQuestion = () => {
-  return prisma.question.findMany({ include: { topic: true } });
+  return prisma.question.findMany({
+    select: {
+      question: true,
+      answer: true,
+      topicId: true,
+      topic: {
+        select: {
+          topicName: true,
+        }
+      },
+      _count: {
+        select: {
+          assignOfBridges: true
+        }
+      }
+    }
+  });
 };
 
 //update status
