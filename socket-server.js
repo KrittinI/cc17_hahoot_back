@@ -94,34 +94,40 @@ io.on("connection", (socket) => {
       player.hasAnswered = true;
       room.answeredPlayers += 1;
 
-      console.log("quizData = ", quizData[room.currentQuestionIndex].answer);
+      console.log("Answer = ", quizData[room.currentQuestionIndex].answer);
       const correct = Boolean(
         answer === quizData[room.currentQuestionIndex].answer
       );
-      console.log(" correct = ", correct);
+      console.log(player.name, " Result = ", correct);
       if (correct) {
-        player.score += 1;
+        player.score += 100;
       }
       socket.emit("answerResult", {
         correct,
-        answer: quizData[room.currentQuestionIndex].answer,
+        score: player.score,
       });
 
       // Check if all non-owner players have answered
       const nonOwnerPlayers = room.players.filter((p) => p.id !== room.owner);
       if (nonOwnerPlayers.every((p) => p.hasAnswered)) {
         io.to(roomId).emit("showAnswer");
-        room.answeredPlayers = 0;
-        room.players.forEach((p) => (p.hasAnswered = false));
-        //room.currentQuestionIndex += 1;
+        //reset to Next Questions
+        //room.answeredPlayers = 0;
+        //room.players.forEach((p) => (p.hasAnswered = false));
+
+        // Broadcast updated scores
+        io.to(roomId).emit("updateScores", room.players);
 
         // if (room.currentQuestionIndex < quizData.length) {
+        //room.currentQuestionIndex += 1;
         //   setTimeout(() => sendQuestion(roomId), 3000);
         // } else {
         //   io.to(roomId).emit("gameOver");
         // }
       }
     }
+    console.log("room=", room);
+    console.log("player=", player);
   });
 
   socket.on("connect_error", (err) => {
