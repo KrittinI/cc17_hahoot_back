@@ -112,22 +112,29 @@ io.on("connection", (socket) => {
       if (nonOwnerPlayers.every((p) => p.hasAnswered)) {
         io.to(roomId).emit("showAnswer");
         //reset to Next Questions
-        //room.answeredPlayers = 0;
-        //room.players.forEach((p) => (p.hasAnswered = false));
+        room.answeredPlayers = 0;
+        room.players.forEach((p) => (p.hasAnswered = false));
 
         // Broadcast updated scores
         io.to(roomId).emit("updateScores", room.players);
 
-        // if (room.currentQuestionIndex < quizData.length) {
-        //room.currentQuestionIndex += 1;
-        //   setTimeout(() => sendQuestion(roomId), 3000);
-        // } else {
-        //   io.to(roomId).emit("gameOver");
-        // }
+        if (room.currentQuestionIndex < quizData.length) {
+          room.currentQuestionIndex += 1;
+          //nextQuestionFN(roomId);
+          //sendQuestion(roomId);
+        } else {
+          io.to(roomId).emit("gameOver");
+        }
       }
     }
     console.log("room=", room);
     console.log("player=", player);
+  });
+
+  socket.on("nextQuestion", (roomId) => {
+    console.log("RoomID in nextQuestion=", roomId);
+    console.log("nextQuestion Backend is working");
+    sendQuestion(roomId);
   });
 
   socket.on("connect_error", (err) => {
@@ -170,6 +177,7 @@ const sendQuestion = (roomId) => {
       image: quizData[room.currentQuestionIndex].image,
     };
     io.to(roomId).emit("newQuestion", questionData);
+    console.log("Sent questionData");
   }
 };
 
