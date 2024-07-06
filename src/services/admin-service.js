@@ -111,7 +111,34 @@ adminService.editHeroById = (heroId) => {
 };
 
 adminService.getAllHero = () => {
-  return prisma.hero.findMany({});
+  return prisma.hero.findMany({
+    include: {
+      question1: {
+        select: {
+          question: true,
+          questionPicture: true
+        }
+      },
+      question2: {
+        select: {
+          question: true,
+          questionPicture: true
+        }
+      },
+      question3: {
+        select: {
+          question: true,
+          questionPicture: true
+        }
+      },
+      question4: {
+        select: {
+          question: true,
+          questionPicture: true
+        }
+      },
+    }
+  });
 };
 
 adminService.getHeroById = (heroId) => {

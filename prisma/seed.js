@@ -690,7 +690,7 @@ How many Horcrux that Lord Voldemort created? `,
     choice2: "6",
     choice3: "7",
     choice4: "10",
-    answer: "D",
+    answer: "C",
     isPublic: false,
     topicId: 7,
     creatorId: 1,
@@ -1042,6 +1042,8 @@ const run = async () => {
   await prisma.question.createMany({ data: commonQuestion });
   await prisma.event.createMany({ data: eventList });
   await prisma.assignOfBridge.createMany({ data: assignList });
+  await prisma.hero.createMany({ data: heroData });
+
 };
 
 const runadmin = async () => {
@@ -1076,4 +1078,4 @@ const runHero = async () => {
 // runQuestion()
 // runEvent()
 // runAssign()
-runHero()
+// runHero()
