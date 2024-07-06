@@ -107,7 +107,7 @@ io.on("connection", (socket) => {
         score: player.score,
       });
 
-      // Check if all non-owner players have answered
+      // !important ** Check if all non-owner players have answered **
       const nonOwnerPlayers = room.players.filter((p) => p.id !== room.owner);
       if (nonOwnerPlayers.every((p) => p.hasAnswered)) {
         io.to(roomId).emit("showAnswer");
@@ -118,23 +118,46 @@ io.on("connection", (socket) => {
         // Broadcast updated scores
         io.to(roomId).emit("updateScores", room.players);
 
-        if (room.currentQuestionIndex < quizData.length) {
-          room.currentQuestionIndex += 1;
-          //nextQuestionFN(roomId);
-          //sendQuestion(roomId);
-        } else {
-          io.to(roomId).emit("gameOver");
-        }
+        //check have next question
+        // if (room.currentQuestionIndex < quizData.length - 1) {
+        //   room.currentQuestionIndex += 1;
+        //   console.log("quizData.length=", quizData.length);
+        //   // 0 1 2
+        //   //nextQuestionFN(roomId);
+        //   //sendQuestion(roomId);
+        // } else {
+        //   io.to(roomId).emit("gameOver");
+        //   console.log("The Game is Over");
+        // }
       }
     }
     console.log("room=", room);
-    console.log("player=", player);
+    //console.log("player=", player);
   });
 
   socket.on("nextQuestion", (roomId) => {
+    const room = rooms[roomId];
     console.log("RoomID in nextQuestion=", roomId);
-    console.log("nextQuestion Backend is working");
+
+    //if (room && room.currentQuestionIndex < quizData.length - 1) {
+    //room.currentQuestionIndex += 1;
     sendQuestion(roomId);
+    console.log("nextQuestion Backend is working");
+    //} else {
+    //  io.to(roomId).emit("gameOver");
+    //  console.log("The Game is Over");
+    //}
+  });
+
+  socket.on("ShowScoreboard", (roomId) => {
+    //chcking if LastQuestion in Scoreboard
+    const room = rooms[roomId];
+    if (room.currentQuestionIndex < quizData.length - 1) {
+      room.currentQuestionIndex += 1;
+    } else {
+      io.to(roomId).emit("gameOver");
+      console.log("The Game is Over");
+    }
   });
 
   socket.on("connect_error", (err) => {
@@ -178,6 +201,9 @@ const sendQuestion = (roomId) => {
     };
     io.to(roomId).emit("newQuestion", questionData);
     console.log("Sent questionData");
+  } else {
+    io.to(roomId).emit("gameOver");
+    console.log("The Game is Over from sendQuestionFN");
   }
 };
 
