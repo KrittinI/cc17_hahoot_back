@@ -92,11 +92,11 @@ model AssignOfBridge {
 }
 
 model AnswerOfBridge {
-  id            Int    @id @default(autoincrement())
-  answer        Int
-  assignId      Int    @map("assign_id")
-  participantId String @map("participant_id")
-  timeStamp     Int?   @map("time_stamp")
+  id            Int     @id @default(autoincrement())
+  answer        Boolean @default(false)
+  assignId      Int     @map("assign_id")
+  participantId String  @map("participant_id")
+  timeStamp     Int?    @map("time_stamp")
 
   assign      AssignOfBridge @relation(fields: [assignId], references: [id])
   participant Participant    @relation(fields: [participantId], references: [id])
