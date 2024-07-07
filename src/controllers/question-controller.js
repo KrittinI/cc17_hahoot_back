@@ -5,6 +5,7 @@ const uploadService = require("../services/upload-service");
 const userService = require("../services/user-service");
 const createError = require("../utils/create-error");
 const fs = require("fs/promises");
+const cloudinary = require("../config/cloudinary");
 
 const questionController = {};
 
@@ -101,8 +102,8 @@ questionController.editQuestionByQuestionId = async (req, res, next) => {
   try {
     const { id } = req.user;
     const { questionId } = req.params;
-    const path = await uploadService.upload(req.file.path);
     const data = JSON.parse(req.body.questions);
+    const path = await uploadService.upload(req.file?.path);
     const question = { ...data, questionPicture: path };
 
     if (
@@ -133,7 +134,13 @@ questionController.editQuestionByQuestionId = async (req, res, next) => {
     if (!existedQuestion) {
       createError(400, "this question id does not exist");
     }
+
     delete question.questionComments;
+    const src = existedQuestion?.questionPicture
+      ?.split("/")
+      .pop()
+      .split(".")[0];
+    await cloudinary.uploader.destroy(src);
     const updateQuestion = await questionService.editQuestionByQuestionId(
       existedQuestion.id,
       question
@@ -142,8 +149,8 @@ questionController.editQuestionByQuestionId = async (req, res, next) => {
   } catch (err) {
     next(err);
   } finally {
-    if (req.file.fieldname === "questionPicture") {
-      fs.unlink(req.file.path);
+    if (req.file?.fieldname === "questionPicture") {
+      fs.unlink(req.file?.path);
     }
   }
 };
