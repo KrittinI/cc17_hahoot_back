@@ -1,3 +1,4 @@
+//Backend Multiplayer
 const { createServer } = require("http");
 const { Server } = require("socket.io");
 
@@ -87,18 +88,26 @@ io.on("connection", (socket) => {
     }
   });
 
-  socket.on("submitAnswer", ({ roomId, answer }) => {
+  socket.on("submitAnswer", ({ roomId, answer, isTimeout }) => {
     const room = rooms[roomId];
     const player = room.players.find((p) => p.id === socket.id);
-    if (player && !player.hasAnswered) {
-      player.hasAnswered = true;
-      room.answeredPlayers += 1;
 
-      console.log("Answer = ", quizData[room.currentQuestionIndex].answer);
-      const correct = Boolean(
-        answer === quizData[room.currentQuestionIndex].answer
-      );
-      console.log(player.name, " Result = ", correct);
+    if (player && !player.hasAnswered && player.id !== room.owner) {
+      room.answeredPlayers += 1;
+      player.hasAnswered = true;
+      //if (isTimeout) return;
+      // if (!isTimeout) {
+      // }
+
+      //console.log("Answer = ", quizData[room.currentQuestionIndex].answer);
+
+      const correct =
+        answer === false
+          ? Boolean(false)
+          : Boolean(answer === quizData[room.currentQuestionIndex].answer);
+
+      //console.log(player.name, "of Result = ", correct);
+      //console.log("-------------------------------------------------------");
       if (correct) {
         player.score += 100;
       }
@@ -107,36 +116,37 @@ io.on("connection", (socket) => {
         score: player.score,
       });
 
+      //if (isTimeout) player.hasAnswered = false;
+
       // !important ** Check if all non-owner players have answered **
+      //const TimeoutPlayers = room.players.filter((p) => p);
+
       const nonOwnerPlayers = room.players.filter((p) => p.id !== room.owner);
+      //    if(room.answeredPlayers === 3) is working
       if (nonOwnerPlayers.every((p) => p.hasAnswered)) {
+        console.log(
+          "answeredPlayers in filterNonOwner =>",
+          room.answeredPlayers
+        );
+
         io.to(roomId).emit("showAnswer");
         //reset to Next Questions
         room.answeredPlayers = 0;
-        room.players.forEach((p) => (p.hasAnswered = false));
+        room.players.forEach((p) => (p.hasAnswered = false)); //all players set to false
 
         // Broadcast updated scores
         io.to(roomId).emit("updateScores", room.players);
-
-        //check have next question
-        // if (room.currentQuestionIndex < quizData.length - 1) {
-        //   room.currentQuestionIndex += 1;
-        //   console.log("quizData.length=", quizData.length);
-        //   // 0 1 2
-        //   //nextQuestionFN(roomId);
-        //   //sendQuestion(roomId);
-        // } else {
-        //   io.to(roomId).emit("gameOver");
-        //   console.log("The Game is Over");
-        // }
+      } else {
+        //player.hasAnswered = false;
       }
+      console.log("room=", room);
+      console.log("player=", player);
+      console.log("-------------------------------------------------------");
     }
-    console.log("room=", room);
-    //console.log("player=", player);
+    //if (isTimeout) player.hasAnswered = false;
   });
 
   socket.on("nextQuestion", (roomId) => {
-    const room = rooms[roomId];
     console.log("RoomID in nextQuestion=", roomId);
 
     //if (room && room.currentQuestionIndex < quizData.length - 1) {
