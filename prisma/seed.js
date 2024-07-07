@@ -7,10 +7,10 @@ const password3 = bcrypt.hashSync("admin03");
 const password4 = bcrypt.hashSync("admin04");
 
 const userData = [
-  { username: "admin01", password: password1, email: "admin01@admin.com", isAdmin: true },
-  { username: "admin02", password: password2, email: "admin02@admin.com", isAdmin: true },
-  { username: "admin03", password: password3, email: "admin03@admin.com", isAdmin: true },
-  { username: "admin04", password: password4, email: "admin04@admin.com", isAdmin: true },
+  { username: "admin01", password: password1, email: "admin01@admin.com", isAdmin: true, profileImage: "/src/assets/profileImg01.jpg" },
+  { username: "admin02", password: password2, email: "admin02@admin.com", isAdmin: true, profileImage: "/src/assets/profileImg02.jpg" },
+  { username: "admin03", password: password3, email: "admin03@admin.com", isAdmin: true, profileImage: "/src/assets/profileImg03.jpg" },
+  { username: "admin04", password: password4, email: "admin04@admin.com", isAdmin: true, profileImage: "/src/assets/profileImg04.jpg" },
 ];
 
 const topicData = [
@@ -1073,7 +1073,7 @@ const runAssign = async () => {
 const runHero = async () => {
   await prisma.hero.createMany({ data: heroData });
 };
-// run();
+run();
 // runadmin()
 // runQuestion()
 // runEvent()
