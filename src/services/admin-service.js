@@ -32,7 +32,13 @@ adminService.getAllData = async () => {
       id: true,
       question: true,
       questionPicture: true,
+      user: {
+        select: {
+          username: true
+        }
+      },
       answer: true,
+      topicId: true,
       _count: {
         select: {
           assignOfBridges: true
@@ -44,6 +50,12 @@ adminService.getAllData = async () => {
     select: {
       id: true,
       eventName: true,
+      user: {
+        select: {
+          username: true
+        }
+      },
+      topicId: true,
       _count: {
         select: {
           assignOfBridges: true,
