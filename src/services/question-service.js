@@ -113,9 +113,7 @@ questionService.createQuestions = (questions) => {
 questionService.editQuestionByQuestionId = (questionId, newInfo) => {
   // delete newInfo.id;
   const { id, topic, topicId, creatorId, QuestionFavorite, user, index, ...data } = newInfo;
-  console.log(newInfo.topicId, "hahahahhha");
   const newestInfo = { ...data, isPublic: Boolean(+newInfo.isPublic) };
-  console.log(newestInfo, "i am new info");
   return prisma.question.update({
     where: {
       id: questionId,
