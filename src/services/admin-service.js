@@ -1,6 +1,88 @@
 const prisma = require("../models/prisma");
 
 const adminService = {};
+const userFilter = {
+  id: true,
+  email: true,
+  username: true,
+  profileImage: true,
+  googleImage: true,
+  isActive: true,
+  isAdmin: true,
+};
+adminService.getAllData = async () => {
+  const result = {}
+  result.users = await prisma.user.findMany({
+    select: {
+      id: true,
+      username: true,
+      email: true,
+      isActive: true,
+      _count: {
+        select: {
+          events: true,
+          Questions: true
+        }
+      }
+    },
+  })
+  result.topics = await prisma.topic.findMany()
+  result.questions = await prisma.question.findMany({
+    select: {
+      id: true,
+      question: true,
+      questionPicture: true,
+      answer: true,
+      _count: {
+        select: {
+          assignOfBridges: true
+        }
+      }
+    }
+  })
+  result.events = await prisma.event.findMany({
+    select: {
+      id: true,
+      eventName: true,
+      _count: {
+        select: {
+          assignOfBridges: true,
+        }
+      }
+    }
+  })
+  result.rooms = await prisma.room.findMany()
+  result.heros = await prisma.hero.findMany({
+    include: {
+      question1: {
+        select: {
+          question: true,
+          questionPicture: true
+        }
+      },
+      question2: {
+        select: {
+          question: true,
+          questionPicture: true
+        }
+      },
+      question3: {
+        select: {
+          question: true,
+          questionPicture: true
+        }
+      },
+      question4: {
+        select: {
+          question: true,
+          questionPicture: true
+        }
+      },
+    }
+  })
+
+  return result
+}
 
 adminService.getAllUserProfile = () => {
   return prisma.user.findMany({

@@ -6,6 +6,15 @@ const fs = require("fs/promises");
 const adminController = {};
 
 // get user profile Event and Question
+adminController.getAllData = async (req, res, next) => {
+  try {
+    const data = await adminService.getAllData()
+    res.status(200).json(data)
+  } catch (error) {
+    next(error)
+  }
+}
+
 adminController.getAllUserProfile = async (req, res, next) => {
   try {
     const users = await adminService.getAllUserProfile();
