@@ -4,10 +4,25 @@ const assignService = {}
 
 assignService.createRelation = (data) => prisma.assignOfBridge.createMany({ data })
 
-assignService.findQuestionInEvent = (eventId) => prisma.assignOfBridge.findMany({
+assignService.findQuestionInEvent = (eventId, userId) => prisma.assignOfBridge.findMany({
     where: { eventId },
     include: {
-        question: true
+        question: {
+            include: {
+                user: {
+                    select: {
+                        id: true,
+                        username: true,
+                        profileImage: true,
+                        googleImage: true,
+                    },
+                },
+                topic: true,
+                QuestionFavorite: {
+                    where: { userId: userId },
+                },
+            },
+        }
     }
 })
 

@@ -119,7 +119,7 @@ questionController.editQuestionByQuestionId = async (req, res, next) => {
       createError(400, "invalid question");
     }
 
-    if (question.answer === "D" && (!input.choice3 || !input.choice4)) {
+    if (question.answer === "D" && (!question?.choice3 || !question?.choice4)) {
       createError(400, "invalid question");
     }
 
@@ -136,15 +136,20 @@ questionController.editQuestionByQuestionId = async (req, res, next) => {
     }
 
     delete question.questionComments;
-    const src = existedQuestion?.questionPicture
-      ?.split("/")
-      .pop()
-      .split(".")[0];
-    await cloudinary.uploader.destroy(src);
+
+    if (path && existedQuestion?.questionPicture) {
+      const src = existedQuestion?.questionPicture
+        ?.split("/")
+        .pop()
+        .split(".")[0];
+      await cloudinary.uploader.destroy(src);
+    }
+
     const updateQuestion = await questionService.editQuestionByQuestionId(
       existedQuestion.id,
       question
     );
+
     res.status(200).json({ question: updateQuestion });
   } catch (err) {
     next(err);
