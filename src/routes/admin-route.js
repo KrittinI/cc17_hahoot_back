@@ -5,6 +5,7 @@ const upload = require("../middlewares/upload");
 const adminRouter = Router();
 
 //############# get user profile Event and Question
+adminRouter.get("/", adminController.getAllData)
 adminRouter.get("/users", adminController.getAllUserProfile);
 adminRouter.get("/events", adminController.getAllEvent);
 adminRouter.get("/questions", adminController.getAllQuestion);
