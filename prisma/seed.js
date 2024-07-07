@@ -358,7 +358,7 @@ const englishQuestion = [
     answer: "B",
     isPublic: false,
     topicId: 3,
-    creatorId: 1,
+    creatorId: 2,
   },
   {
     question: `Choose the correct pronoun to complete the sentence: "Maria and _____ went to the market."`,
@@ -369,7 +369,7 @@ const englishQuestion = [
     answer: "B",
     isPublic: false,
     topicId: 3,
-    creatorId: 1,
+    creatorId: 2,
   },
 ];
 // topic 4 Sports
@@ -383,7 +383,7 @@ const sportsQuestion = [
     answer: "B",
     isPublic: false,
     topicId: 4,
-    creatorId: 1,
+    creatorId: 2,
   },
   {
     question: `In which sport would you perform a slam dunk?`,
@@ -394,7 +394,7 @@ const sportsQuestion = [
     answer: "C",
     isPublic: false,
     topicId: 4,
-    creatorId: 1,
+    creatorId: 2,
   },
   {
     question: `Which country is known for originating the sport of cricket?`,
@@ -405,7 +405,7 @@ const sportsQuestion = [
     answer: "D",
     isPublic: false,
     topicId: 4,
-    creatorId: 1,
+    creatorId: 2,
   },
   {
     question: `Rugby football was origin in which country?`,
@@ -416,7 +416,7 @@ const sportsQuestion = [
     answer: "B",
     isPublic: false,
     topicId: 4,
-    creatorId: 1,
+    creatorId: 2,
   },
   {
     question: "Who is the champion in FIFA world CUP 2022?",
@@ -514,7 +514,7 @@ const sciecneQuestion = [
     answer: "B",
     isPublic: false,
     topicId: 5,
-    creatorId: 1,
+    creatorId: 3,
   },
   {
     question: `Who was develeoped AC Current?`,
@@ -525,7 +525,7 @@ const sciecneQuestion = [
     answer: "D",
     isPublic: false,
     topicId: 5,
-    creatorId: 1,
+    creatorId: 3,
   },
 ];
 // topic 6 Manga
@@ -539,7 +539,7 @@ const mangaQuestion = [
     answer: "B",
     isPublic: false,
     topicId: 6,
-    creatorId: 1,
+    creatorId: 3,
   },
   {
     question: `ในมังงะ "One Piece" โกล ดี โรเจอร์ เป็นที่รู้จักในฐานะอะไร?`,
@@ -550,7 +550,7 @@ const mangaQuestion = [
     answer: "A",
     isPublic: false,
     topicId: 6,
-    creatorId: 1,
+    creatorId: 3,
   },
   {
     question: `มังงะเรื่อง "Attack on Titan" สร้างสรรค์โดยใคร?`,
@@ -561,7 +561,7 @@ const mangaQuestion = [
     answer: "A",
     isPublic: false,
     topicId: 6,
-    creatorId: 1,
+    creatorId: 3,
   },
   {
     question: `มังงะเรื่อง "Death Note" ใครเป็นผู้ถือสมุดบันทึกแห่งความตายคนแรกที่ปรากฏในเรื่อง?
@@ -705,7 +705,7 @@ Where was the case that happened in Conjuring 2?`,
     answer: "A",
     isPublic: false,
     topicId: 7,
-    creatorId: 1,
+    creatorId: 4,
   },
   {
     question: `Inside out
@@ -717,7 +717,7 @@ What color of Sadness`,
     answer: "D",
     isPublic: false,
     topicId: 7,
-    creatorId: 1,
+    creatorId: 4,
   },
 ];
 // topic 8 Geography
@@ -731,7 +731,7 @@ const geographyQuestion = [
     answer: "A",
     isPublic: false,
     topicId: 8,
-    creatorId: 1,
+    creatorId: 4,
   },
   {
     question: `Which state in U.S.A have border only 1 state?`,
@@ -742,7 +742,7 @@ const geographyQuestion = [
     answer: "C",
     isPublic: false,
     topicId: 8,
-    creatorId: 1,
+    creatorId: 4,
   },
   {
     question: `Where is Angel Waterfall?`,
@@ -754,7 +754,7 @@ const geographyQuestion = [
     answer: "C",
     isPublic: false,
     topicId: 8,
-    creatorId: 1,
+    creatorId: 4,
   },
   {
     question: `The biggest ocean is Pacific Ocean ? `,
@@ -763,7 +763,7 @@ const geographyQuestion = [
     answer: "A",
     isPublic: false,
     topicId: 8,
-    creatorId: 1,
+    creatorId: 4,
   },
 ];
 // topic 9 Music
@@ -777,7 +777,7 @@ const musicQuestion = [
     answer: "C",
     isPublic: false,
     topicId: 9,
-    creatorId: 1,
+    creatorId: 4,
   },
   {
     question: `Which song is in Album "Multiply" from "Ed Sheeran" ?`,
@@ -835,7 +835,7 @@ const commonQuestion = [
     answer: "A",
     isPublic: false,
     topicId: 10,
-    creatorId: 1,
+    creatorId: 4,
   },
   {
     question: `What is Capital City of Indonesia?`,
@@ -846,7 +846,7 @@ const commonQuestion = [
     answer: "D",
     isPublic: false,
     topicId: 10,
-    creatorId: 1,
+    creatorId: 4,
   },
   {
     question: `What is Capital City of Canada?`,
@@ -857,7 +857,7 @@ const commonQuestion = [
     answer: "B",
     isPublic: false,
     topicId: 10,
-    creatorId: 1,
+    creatorId: 4,
   },
   {
     question: `What is Capital City of Norway?`,
@@ -868,21 +868,21 @@ const commonQuestion = [
     answer: "C",
     isPublic: false,
     topicId: 10,
-    creatorId: 1,
+    creatorId: 4,
   },
 ];
 
 const eventList = [
   { eventName: "Mathematics Question?", description: "Basic Math question", eventImage: "", topicId: 1, timeLimit: 30, creatorId: 1 },
-  { eventName: "Code Question?", description: "Basic Code question", eventImage: "", topicId: 2, timeLimit: 30, creatorId: 1 },
+  { eventName: "Code Question?", description: "Basic Code question", eventImage: "", topicId: 2, timeLimit: 30, creatorId: 2 },
   { eventName: "English Question?", description: "Basic English question", eventImage: "", topicId: 3, timeLimit: 30, creatorId: 1 },
-  { eventName: "Sports Question?", description: "Basic Sports question", eventImage: "", topicId: 4, timeLimit: 30, creatorId: 1 },
+  { eventName: "Sports Question?", description: "Basic Sports question", eventImage: "", topicId: 4, timeLimit: 30, creatorId: 3 },
   { eventName: "Manga Question?", description: "Basic Manga question", eventImage: "", topicId: 5, timeLimit: 30, creatorId: 1 },
-  { eventName: "Movie Question?", description: "Basic Movie question", eventImage: "", topicId: 6, timeLimit: 30, creatorId: 1 },
-  { eventName: "Science Question?", description: "Basic Science question", eventImage: "", topicId: 7, timeLimit: 30, creatorId: 1 },
+  { eventName: "Movie Question?", description: "Basic Movie question", eventImage: "", topicId: 6, timeLimit: 30, creatorId: 4 },
+  { eventName: "Science Question?", description: "Basic Science question", eventImage: "", topicId: 7, timeLimit: 30, creatorId: 2 },
   { eventName: "Geography Question?", description: "Basic Geography question", eventImage: "", topicId: 8, timeLimit: 30, creatorId: 1 },
-  { eventName: "Music Question?", description: "Basic Music question", eventImage: "", topicId: 9, timeLimit: 30, creatorId: 1 },
-  { eventName: "Common Question?", description: "Basic Common question", eventImage: "", topicId: 10, timeLimit: 30, creatorId: 1 },
+  { eventName: "Music Question?", description: "Basic Music question", eventImage: "", topicId: 9, timeLimit: 30, creatorId: 3 },
+  { eventName: "Common Question?", description: "Basic Common question", eventImage: "", topicId: 10, timeLimit: 30, creatorId: 4 },
 ];
 
 const assignList = [
