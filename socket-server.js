@@ -280,8 +280,8 @@ const sendQuestion = (roomId) => {
   }
 };
 
-// เริ่มเซิร์ฟเวอร์
+// เริ่มเซิร์ฟเวอร์และฟังที่ IP address 0.0.0.0
 const PORT = process.env.PORT || 4000;
-server.listen(PORT, () => {
+server.listen(PORT, "0.0.0.0", () => {
   console.log(`Socket Server is running on port ${PORT}`);
 });
