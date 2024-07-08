@@ -52,10 +52,84 @@ const geographyQuestion = [
     creatorId: 4,
   },
   {
-    questionPicture: "src/assets/hh-hero.png",
-    question: `The biggest ocean is Pacific Ocean ? `,
-    choice1: "TRUE",
-    choice2: "FALSE",
+    question: `คิดว่าใครจะชนะในศึกฟุตบอลยูโร 2024?`,
+    questionPicture: `https://www.rushbar.fr/wp-content/uploads/2024/05/22700824-euro-2024-allemagne-officiel-logo-avec-nom-bleu-symbole-europeen-football-final-conception-vecteur-illustration-gratuit-vectoriel.jpg`,
+    choice1: "England",
+    choice2: "Spain",
+    choice3: "Netherlands",
+    choice4: "France",
+    answer: "B",
+    isPublic: false,
+    topicId: 8,
+    creatorId: 4,
+  },
+  {
+    question: `ใครหล่อสุดใน CC-17 Codecamp?`,
+    questionPicture: `https://media.licdn.com/dms/image/C560BAQFzqgedOoX_rg/company-logo_200_200/0/1630644648038?e=2147483647&v=beta&t=rwNV9IHdP81Awn7vVor2AtnI6RqVmDmKVRFXbUpuRF4`,
+    choice1: "Boom",
+    choice2: "Gong",
+    choice3: "KK",
+    choice4: "Pae",
+    answer: "D",
+    isPublic: false,
+    topicId: 8,
+    creatorId: 4,
+  },
+  {
+    question: `สุ่มมั่ว 123`,
+    questionPicture: `https://ioflood.com/blog/wp-content/uploads/2023/10/java_logo_dice_random.jpg`,
+    choice1: "awd#%aw",
+    choice2: "ewf33",
+    choice3: "awda(xd",
+    choice4: "il2o!as24",
+    answer: "A",
+    isPublic: false,
+    topicId: 8,
+    creatorId: 4,
+  },
+  {
+    question: `สุ่มมั่ว 123`,
+    questionPicture: `https://ioflood.com/blog/wp-content/uploads/2023/10/java_logo_dice_random.jpg`,
+    choice1: "awd#%aw",
+    choice2: "ewf33",
+    choice3: "awda(xd",
+    choice4: "il2o!as24",
+    answer: "A",
+    isPublic: false,
+    topicId: 8,
+    creatorId: 4,
+  },
+  {
+    question: `กดปุ่มไหนในรูปด้านล่างถึงจะถูกต้อง?`,
+    questionPicture: `https://cdn.britannica.com/15/193115-050-0D385DDA/Collage-cats-cat-quiz-Mendel.jpg`,
+    choice1: "ปุ่มซ้ายบน",
+    choice2: "ปุ่มขวาล่าง",
+    choice3: "ปุ่มตรงกลาง",
+    choice4: "ปุ่มซ้ายล่าง",
+    answer: "C",
+    isPublic: false,
+    topicId: 8,
+    creatorId: 4,
+  },
+  {
+    question: `ในภาพนี้มีทั้งหมดกี่แมว?`,
+    questionPicture: `https://cdn.britannica.com/15/193115-050-0D385DDA/Collage-cats-cat-quiz-Mendel.jpg`,
+    choice1: "2 ตัว",
+    choice2: "4 ตัว",
+    choice3: "6 ตัว",
+    choice4: "แมวไหน?",
+    answer: "D",
+    isPublic: false,
+    topicId: 8,
+    creatorId: 4,
+  },
+  {
+    question: `ในภาพนี้คนไหนกำลังคิดอะไรอยู่?`,
+    questionPicture: `https://cdn.britannica.com/15/193115-050-0D385DDA/Collage-cats-cat-quiz-Mendel.jpg`,
+    choice1: "คนแรก",
+    choice2: "คนที่สอง",
+    choice3: "คนที่สาม",
+    choice4: "ทุกคนกำลังคิดอะไรบางอย่าง",
     answer: "A",
     isPublic: false,
     topicId: 8,
@@ -74,6 +148,12 @@ io.on("connection", (socket) => {
       currentQuestionIndex: 0,
       answeredPlayers: 0,
       isGameStarted: false,
+      answerCounts: {
+        A: 0,
+        B: 0,
+        C: 0,
+        D: 0,
+      },
     };
     socket.join(roomId);
     socket.emit("isOwner");
@@ -158,6 +238,12 @@ io.on("connection", (socket) => {
         }
       };
 
+      const choice = checkAnswer(answer);
+      if (choice) {
+        room.answerCounts[choice] += 1;
+        io.to(roomId).emit("RoomAnswerCount", room.answerCounts);
+      }
+
       const correct =
         answer === false
           ? Boolean(false)
@@ -208,10 +294,12 @@ io.on("connection", (socket) => {
   });
 
   socket.on("nextQuestion", (roomId) => {
+    const room = rooms[roomId];
     console.log("RoomID in nextQuestion=", roomId);
 
     //if (room && room.currentQuestionIndex < quizData.length - 1) {
     //room.currentQuestionIndex += 1;
+    room.answerCounts = { A: 0, B: 0, C: 0, D: 0 }; // Reset counts for next question
     sendQuestion(roomId);
     console.log("nextQuestion Backend is working");
     //} else {
