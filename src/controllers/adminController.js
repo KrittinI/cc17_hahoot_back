@@ -61,7 +61,8 @@ adminController.updateUserStatus = async (req, res, next) => {
 //createHero
 adminController.createHero = async (req, res, next) => {
   try {
-    const heroInfo = req.body;
+    const heroInfo = JSON.parse(req.body.hero);
+    console.log(heroInfo);
     console.log(req.files);
     const promises = [];
     if (req.files.eventPicture) {
@@ -87,10 +88,10 @@ adminController.createHero = async (req, res, next) => {
     if (!heroInfo.quiz1 || !heroInfo.quiz2 || !heroInfo.quiz3 || !heroInfo.quiz3 || !heroInfo.quiz4) createError(400, "question must have 4 questions");
 
     const data = { ...req.body, quiz1: +req.body.quiz1, quiz2: +req.body.quiz2, quiz3: +req.body.quiz3, quiz4: +req.body.quiz4, ...pictures };
-
-    const event = await adminService.createHero(data);
-    await adminService.editHeroById(event.id);
-    res.status(200).json({ event });
+    console.log(data);
+    // const event = await adminService.createHero(data);
+    // await adminService.editHeroById(event.id);
+    // res.status(200).json({ event });
   } catch (err) {
     next(err);
   } finally {
