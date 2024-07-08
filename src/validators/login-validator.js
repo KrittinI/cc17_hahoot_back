@@ -9,8 +9,8 @@ const loginSchema = Joi.object({
       "string.email": "Email is not formatted correctly.",
     }),
   password: Joi.string()
-    .required()
     .messages({ "string.empty": "Password is not allowed to be empty." }),
+  googlePassword: Joi.string()
 });
 
 const validateLogin = (input) => {

@@ -20,13 +20,15 @@ model Verify {
 }
 
 model User {
-  id           Int     @id @default(autoincrement())
-  email        String  @unique
-  password     String  @db.VarChar(100)
-  username     String? @unique @db.VarChar(100)
-  isAdmin      Boolean @default(false) @map("is_admin")
-  profileImage String? @map("profile_image")
-  isActive     Boolean @default(false) @map("is_active")
+  id             Int     @id @default(autoincrement())
+  email          String  @unique
+  password       String? @db.VarChar(100)
+  googlePassword String? @map("google_password") @db.VarChar(100)
+  username       String? @unique @db.VarChar(100)
+  isAdmin        Boolean @default(false) @map("is_admin")
+  profileImage   String? @map("profile_image")
+  googleImage    String? @map(" google_image")
+  isActive       Boolean @default(false) @map("is_active")
 
   events            Event[]
   EventComments     EventComment[]
@@ -37,24 +39,31 @@ model User {
 }
 
 model Event {
-  id          String   @id @default(uuid())
-  eventName   String   @map("event_name") @db.VarChar(100)
-  description String?  @db.Text
-  eventImage  String?  @map("event_image")
-  dueDate     DateTime @map("due_date") @db.Timestamp(5)
-  timeLimit   Int      @map("time_limit")
-  creatorId   Int      @map("creator_id")
-  questionId  Int      @map("question_id")
-  topicId     Int      @map("topic_id")
-  isPublic    Boolean  @default(false)
+  id          Int     @id @default(autoincrement())
+  eventName   String  @map("event_name") @db.VarChar(100)
+  description String? @db.Text
+  eventImage  String? @map("event_image")
+  timeLimit   Int     @default(0) @map("time_limit")
+  creatorId   Int     @map("creator_id")
+  topicId     Int     @map("topic_id")
+  isDelete    Boolean @default(false)
 
   user            User             @relation(fields: [creatorId], references: [id])
   topic           Topic            @relation(fields: [topicId], references: [id])
-  question        AssignOfBridge   @relation(name: "question", fields: [questionId], references: [id])
-  participants    Participant[]
   assignOfBridges AssignOfBridge[]
   EventComments   EventComment[]
   EventFavorites  EventFavorite[]
+  Room            Room[]
+}
+
+model Room {
+  id           String   @id @default(uuid())
+  eventId      Int      @map("event_id")
+  participanId String   @map("participant_id")
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamp(3)
+
+  event      Event       @relation(fields: [eventId], references: [id])
+  paticipant Participant @relation(fields: [participanId], references: [id])
 }
 
 model Participant {
@@ -62,32 +71,32 @@ model Participant {
   username      String @unique @db.VarChar(20)
   profileAvatar String @map("profile_avatar")
   raceTime      Int    @map("race_time")
-  eventId       String @map("event_id")
+  eventId       Int    @map("event_id")
 
-  event           Event            @relation(fields: [eventId], references: [id])
   AnswerOfBridges AnswerOfBridge[]
+  Room            Room[]
 }
 
 model AssignOfBridge {
-  id         Int    @id @default(autoincrement())
-  timeLimit  Int    @map("time_limit")
-  eventId    String @map("event_id")
-  questionId Int    @map("question_id")
+  id         Int @id @default(autoincrement())
+  timeLimit  Int @default(10) @map("time_limit")
+  eventId    Int @map("event_id")
+  questionId Int @map("question_id")
+  order      Int
 
   event           Event            @relation(fields: [eventId], references: [id])
   question        Question         @relation(fields: [questionId], references: [id])
   AnswerOfBridges AnswerOfBridge[]
-  events          Event[]          @relation(name: "question")
 
   @@map("assign_of_bridge")
 }
 
 model AnswerOfBridge {
-  id            Int    @id @default(autoincrement())
-  answer        Int
-  assignId      Int    @map("assign_id")
-  participantId String @map("participant_id")
-  timeStamp     Int?   @map("time_stamp")
+  id            Int     @id @default(autoincrement())
+  answer        Boolean @default(false)
+  assignId      Int     @map("assign_id")
+  participantId String  @map("participant_id")
+  timeStamp     Int?    @map("time_stamp")
 
   assign      AssignOfBridge @relation(fields: [assignId], references: [id])
   participant Participant    @relation(fields: [participantId], references: [id])
@@ -100,7 +109,7 @@ model EventComment {
   rate    Int
   comment String? @db.Text
   userId  Int     @map("user_id")
-  eventId String  @map("event_id")
+  eventId Int     @map("event_id")
 
   user  User  @relation(fields: [userId], references: [id])
   event Event @relation(fields: [eventId], references: [id])
@@ -109,9 +118,9 @@ model EventComment {
 }
 
 model EventFavorite {
-  id      Int    @id @default(autoincrement())
-  userId  Int    @map("user_id")
-  eventId String @map("event_id")
+  id      Int @id @default(autoincrement())
+  userId  Int @map("user_id")
+  eventId Int @map("event_id")
 
   user  User  @relation(fields: [userId], references: [id])
   event Event @relation(fields: [eventId], references: [id])
@@ -136,15 +145,20 @@ model Question {
   choice3         String?      @map("choice_3") @db.VarChar(100)
   choice4         String?      @map("choice_4") @db.VarChar(100)
   answer          AnswerChoice @default(Z)
-  isPublic        Boolean      @default(false) @map("is_public")
+  isDelete        Boolean      @default(false) @map("is_delete")
   topicId         Int          @map("topic_id")
   creatorId       Int          @map("creator_id")
 
   topic            Topic              @relation(fields: [topicId], references: [id])
-  creator          User               @relation(fields: [creatorId], references: [id])
+  user             User               @relation(fields: [creatorId], references: [id])
   assignOfBridges  AssignOfBridge[]
   questionComments QuestionComment[]
   QuestionFavorite QuestionFavorite[]
+
+  Hero1 Hero[] @relation(name: "quiz1")
+  Hero2 Hero[] @relation(name: "quiz2")
+  Hero3 Hero[] @relation(name: "quiz3")
+  Hero4 Hero[] @relation(name: "quiz4")
 }
 
 model QuestionComment {
@@ -177,4 +191,23 @@ model Topic {
 
   questions Question[]
   events    Event[]
+}
+
+model Hero {
+  id           Int       @id @default(autoincrement())
+  title        String    @db.VarChar(100)
+  detail       String    @db.Text
+  eventPicture String?   @map("event_picture")
+  icon         String?   @map("icon")
+  quiz1        Int       @map("question1_id")
+  quiz2        Int       @map("question2_id")
+  quiz3        Int       @map("question3_id")
+  quiz4        Int       @map("question4_id")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime? @updatedAt @map("updated_at")
+  isActive     Boolean   @default(true) @map("is_active")
+  question1    Question  @relation(name: "quiz1", fields: [quiz1], references: [id])
+  question2    Question  @relation(name: "quiz2", fields: [quiz2], references: [id])
+  question3    Question  @relation(name: "quiz3", fields: [quiz3], references: [id])
+  question4    Question  @relation(name: "quiz4", fields: [quiz4], references: [id])
 }

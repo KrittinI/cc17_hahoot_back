@@ -5,7 +5,10 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon socket-server.js"
+    "dev": "nodemon app.js",
+    "seed": "node prisma/seed.js",
+    "resetDB": "node prisma/resetDB.js",
+    "devSocket": "nodemon socket-server.js"
   },
   "keywords": [],
   "author": "",
@@ -13,12 +16,15 @@
   "dependencies": {
     "@prisma/client": "5.15.1",
     "bcryptjs": "^2.4.3",
+    "cloudinary": "^2.2.0",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
+    "fs": "0.0.1-security",
     "joi": "^17.13.3",
     "jsonwebtoken": "^9.0.2",
     "morgan": "^1.10.0",
+    "multer": "1.4.5-lts.1",
     "nodemailer": "^6.9.14",
     "socket.io": "^4.7.5",
     "uuid": "^10.0.0"
