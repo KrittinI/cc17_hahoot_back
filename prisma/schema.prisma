@@ -46,7 +46,7 @@ model Event {
   timeLimit   Int     @default(0) @map("time_limit")
   creatorId   Int     @map("creator_id")
   topicId     Int     @map("topic_id")
-  isPublic    Boolean @default(false)
+  isDelete    Boolean @default(false)
 
   user            User             @relation(fields: [creatorId], references: [id])
   topic           Topic            @relation(fields: [topicId], references: [id])
@@ -145,7 +145,7 @@ model Question {
   choice3         String?      @map("choice_3") @db.VarChar(100)
   choice4         String?      @map("choice_4") @db.VarChar(100)
   answer          AnswerChoice @default(Z)
-  isPublic        Boolean      @default(false) @map("is_public")
+  isDelete        Boolean      @default(false) @map("is_delete")
   topicId         Int          @map("topic_id")
   creatorId       Int          @map("creator_id")
 
