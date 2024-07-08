@@ -27,30 +27,7 @@ const geographyQuestion = [
     topicId: 8,
     creatorId: 4,
   },
-  {
-    questionPicture: "src/assets/hh-hero.png",
-    question: `Which state in U.S.A have border only 1 state?`,
-    choice1: "Hawaii",
-    choice2: "Alaska",
-    choice3: "Maine",
-    choice4: "Florida",
-    answer: "C",
-    isPublic: false,
-    topicId: 8,
-    creatorId: 4,
-  },
-  {
-    question: `Where is Angel Waterfall?`,
-    questionPicture: `https://upload.wikimedia.org/wikipedia/commons/e/e9/SaltoAngel1.jpg`,
-    choice1: "Brazil",
-    choice2: "Columbia",
-    choice3: "Venezuela",
-    choice4: "Argentina",
-    answer: "C",
-    isPublic: false,
-    topicId: 8,
-    creatorId: 4,
-  },
+
   {
     question: `คิดว่าใครจะชนะในศึกฟุตบอลยูโร 2024?`,
     questionPicture: `https://www.rushbar.fr/wp-content/uploads/2024/05/22700824-euro-2024-allemagne-officiel-logo-avec-nom-bleu-symbole-europeen-football-final-conception-vecteur-illustration-gratuit-vectoriel.jpg`,
@@ -71,66 +48,6 @@ const geographyQuestion = [
     choice3: "KK",
     choice4: "Pae",
     answer: "D",
-    isPublic: false,
-    topicId: 8,
-    creatorId: 4,
-  },
-  {
-    question: `สุ่มมั่ว 123`,
-    questionPicture: `https://ioflood.com/blog/wp-content/uploads/2023/10/java_logo_dice_random.jpg`,
-    choice1: "awd#%aw",
-    choice2: "ewf33",
-    choice3: "awda(xd",
-    choice4: "il2o!as24",
-    answer: "A",
-    isPublic: false,
-    topicId: 8,
-    creatorId: 4,
-  },
-  {
-    question: `สุ่มมั่ว 123$%& Again`,
-    questionPicture: `https://ioflood.com/blog/wp-content/uploads/2023/10/java_logo_dice_random.jpg`,
-    choice1: "awd#%aw",
-    choice2: "ewf33",
-    choice3: "awda(xd",
-    choice4: "il2o!as24",
-    answer: "B",
-    isPublic: false,
-    topicId: 8,
-    creatorId: 4,
-  },
-  {
-    question: `กดปุ่มไหนในรูปด้านล่างถึงจะถูกต้อง?`,
-    questionPicture: `https://cdn.britannica.com/15/193115-050-0D385DDA/Collage-cats-cat-quiz-Mendel.jpg`,
-    choice1: "ปุ่มซ้ายบน",
-    choice2: "ปุ่มขวาล่าง",
-    choice3: "ปุ่มตรงกลาง",
-    choice4: "ปุ่มซ้ายล่าง",
-    answer: "C",
-    isPublic: false,
-    topicId: 8,
-    creatorId: 4,
-  },
-  {
-    question: `ในภาพนี้มีแมวทั้งหมดกี่ตัว?`,
-    questionPicture: `https://cdn.britannica.com/15/193115-050-0D385DDA/Collage-cats-cat-quiz-Mendel.jpg`,
-    choice1: "2 ตัว",
-    choice2: "4 ตัว",
-    choice3: "6 ตัว",
-    choice4: "แมวไหน?",
-    answer: "D",
-    isPublic: false,
-    topicId: 8,
-    creatorId: 4,
-  },
-  {
-    question: `ในภาพนี้คนไหนกำลังคิดอะไรอยู่?`,
-    questionPicture: `https://cdn.britannica.com/15/193115-050-0D385DDA/Collage-cats-cat-quiz-Mendel.jpg`,
-    choice1: "คนแรก",
-    choice2: "คนที่สอง",
-    choice3: "คนที่สาม",
-    choice4: "ทุกคนกำลังคิดอะไรบางอย่าง",
-    answer: "A",
     isPublic: false,
     topicId: 8,
     creatorId: 4,
@@ -254,7 +171,8 @@ io.on("connection", (socket) => {
 
       //answer คือคำตอบที่หน้าบ้านส่งมา เทียบกับ คำตอบที่หลังบ้านมีแต่ถ้าเป็น ช้อยต้องหาวิธี
       //console.log(player.name, "of Result = ", correct);
-      //console.log("-------------------------------------------------------");
+      //console.log("-----------------------------------------------------");
+
       if (correct) {
         player.score += 1000;
       }
@@ -310,7 +228,9 @@ io.on("connection", (socket) => {
 
   socket.on("ShowScoreboard", (roomId) => {
     //chcking if LastQuestion in Scoreboard
+    io.to(roomId).emit("answerCount", 0);
     const room = rooms[roomId];
+
     if (room.currentQuestionIndex < geographyQuestion.length - 1) {
       room.currentQuestionIndex += 1;
     } else {
