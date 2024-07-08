@@ -163,7 +163,8 @@ eventController.createEvent = async (req, res, next) => {
     if (eventData.timeLimit) {
       eventData.timeLimit = +eventData.timeLimit;
     }
-    const url = uploadService.upload(file);
+    const url = await uploadService.upload(file);
+    console.log(url);
     eventData.eventImage = url
     eventData.creatorId = req.user.id;
     const { event, questions, assign } = await eventService.createEvent({ ...eventData }, questionData);
