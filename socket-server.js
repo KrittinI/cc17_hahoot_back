@@ -109,10 +109,14 @@ io.on("connection", (socket) => {
   socket.on("submitAnswer", ({ roomId, answer, isTimeout }) => {
     const room = rooms[roomId];
     const player = room.players.find((p) => p.id === socket.id);
-
+    //&& player.id !== room.owner
     if (player && !player.hasAnswered && player.id !== room.owner) {
-      room.answeredPlayers += 1;
       player.hasAnswered = true;
+      room.answeredPlayers += 1;
+
+      io.to(roomId).emit("answerCount", room.answeredPlayers);
+
+      //socket.emit("answerCount", room.answeredPlayers);
       //if (isTimeout) return;
       // if (!isTimeout) {
       // }
@@ -138,6 +142,7 @@ io.on("connection", (socket) => {
       //     checkAnswer = false;
       //     break;
       // }
+
       const checkAnswer = (answer) => {
         switch (answer) {
           case geographyQuestion[room.currentQuestionIndex].choice1:
