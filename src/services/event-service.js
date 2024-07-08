@@ -94,7 +94,17 @@ eventService.createEvent = (body, question) =>
   prisma.$transaction(async (tx) => {
     const result = {};
     // *************************** Create New Event
-    const event = await tx.event.create({ data: body });
+    const event = await tx.event.create({
+      data: body,
+      include: {
+        user: {
+          select: {
+            profileImage: true
+          }
+        },
+        topic: true
+      }
+    });
 
     // *************************** Create New Question
     const assign = [];
