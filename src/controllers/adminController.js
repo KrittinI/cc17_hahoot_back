@@ -61,8 +61,7 @@ adminController.updateUserStatus = async (req, res, next) => {
 //createHero
 adminController.createHero = async (req, res, next) => {
   try {
-    const heroInfo = req.body;
-    console.log(req.files);
+    const heroInfo = JSON.parse(req.body.hero);
     const promises = [];
     if (req.files.eventPicture) {
       const result = uploadService.upload(req.files.eventPicture[0].path).then((url) => ({ url, key: "eventPicture" }));
@@ -75,22 +74,19 @@ adminController.createHero = async (req, res, next) => {
 
     const allResult = await Promise.all(promises);
 
-    console.log(allResult);
 
     const pictures = allResult.reduce((acc, cur) => {
       acc[cur.key] = cur["url"];
       return acc;
     }, {});
-
     if (!heroInfo.title) createError(400, "invalid title");
     if (!heroInfo.detail) createError(400, "invalid detail");
     if (!heroInfo.quiz1 || !heroInfo.quiz2 || !heroInfo.quiz3 || !heroInfo.quiz3 || !heroInfo.quiz4) createError(400, "question must have 4 questions");
 
-    const data = { ...req.body, quiz1: +req.body.quiz1, quiz2: +req.body.quiz2, quiz3: +req.body.quiz3, quiz4: +req.body.quiz4, ...pictures };
-
-    const event = await adminService.createHero(data);
-    await adminService.editHeroById(event.id);
-    res.status(200).json({ event });
+    const data = { ...heroInfo, quiz1: +heroInfo.quiz1, quiz2: +heroInfo.quiz2, quiz3: +heroInfo.quiz3, quiz4: +heroInfo.quiz4, ...pictures };
+    const hero = await adminService.createHero(data);
+    await adminService.editHeroById(hero.id);
+    res.status(200).json({ hero });
   } catch (err) {
     next(err);
   } finally {
