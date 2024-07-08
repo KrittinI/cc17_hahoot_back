@@ -1,3 +1,4 @@
+const { json } = require("express");
 const prisma = require("../models/prisma");
 const assignService = require("../services/assign-service");
 const eventService = require("../services/event-service");
@@ -6,6 +7,7 @@ const topicService = require("../services/topic-service");
 const uploadService = require("../services/upload-service");
 const userService = require("../services/user-service");
 const createError = require("../utils/create-error");
+const fs = require("fs/promises");
 
 const eventController = {};
 
@@ -86,38 +88,12 @@ eventController.getEventById = async (req, res, next) => {
 };
 
 // POST Create Event
-eventController.createEvent = async (req, res, next) => {
-  try {
-    const eventData = req.body;
-    console.log(req.file.path, "path");
-    const file = req.file.path;
-    console.log(eventData, req.file);
-    // const eventData = req.body.events;
-    if (!eventData.eventName || !eventData.topicId) {
-      createError(400, "Event must have name, topic");
-    }
-
-    const existedTopic = await topicService.findTopicById(+eventData.topicId);
-    if (!existedTopic) {
-      createError(400, "topic not found");
-    }
-    eventData.topicId = existedTopic.id;
-    if (eventData.timeLimit) {
-      eventData.timeLimit = +eventData.timeLimit;
-    }
-    const url = await uploadService.upload(file);
-    eventData.creatorId = req.user.id;
-
-    const eventCreated = await eventService.createEvent({ ...req.body, eventImage: url });
-    console.log(req.body, url);
-    res.status(201).json({ eventCreated });
-  } catch (error) {
-    next(error);
-  }
-};
 // eventController.createEvent = async (req, res, next) => {
 //   try {
+//     //ส่งมาเป็น string (stringify) => field event
+//     //parseJSON ออกมา
 //     const eventData = req.body;
+//     console.log(req.file.path, "path");
 //     const file = req.file.path;
 //     console.log(eventData, req.file);
 //     // const eventData = req.body.events;
@@ -133,15 +109,72 @@ eventController.createEvent = async (req, res, next) => {
 //     if (eventData.timeLimit) {
 //       eventData.timeLimit = +eventData.timeLimit;
 //     }
-//     const url = uploadService.upload(file);
+//     const url = await uploadService.upload(file);
 //     eventData.creatorId = req.user.id;
 
-//     const { event, questions, assign } = await eventService.createEvent(req.body);
-//     res.status(201).json({ event, questions, assign });
+//     const eventCreated = await eventService.createEvent({ ...req.body, eventImage: url });
+//     console.log(eventCreated);
+//     res.status(201).json({ eventCreated });
 //   } catch (error) {
 //     next(error);
 //   }
 // };
+eventController.createEvent = async (req, res, next) => {
+  try {
+    const file = req.file.path;
+
+    const eventData = JSON.parse(req.body.events);
+
+    const questionData = JSON.parse(req.body.question);
+    // const addArr = [sentQuestion];
+
+    // let questionData;
+    // if (addArr.length > 1) {
+    //   questionData = addArr
+    //     .map((ques) => {
+    //       const obj = ques.split("},{").map((obj, index, array) => {
+    //         // เพิ่มเครื่องหมายวงเล็บปิดและเปิดที่หายไป
+    //         if (index === 0) {
+    //           obj += "}";
+    //         } else if (index === array.length - 1) {
+    //           obj = "{" + obj;
+    //         } else {
+    //           obj = "{" + obj + "}";
+    //         }
+    //         return JSON.parse(obj);
+    //       });
+
+    //       return obj;
+    //     })
+    //     .flat(); //[[]] => []
+    // } else {
+    //   questionData = JSON.parse(addArr);
+    // }
+
+    if (!eventData.eventName || !eventData.topicId) {
+      createError(400, "Event must have name, topic");
+    }
+
+    const existedTopic = await topicService.findTopicById(+eventData.topicId);
+    if (!existedTopic) {
+      createError(400, "topic not found");
+    }
+    eventData.topicId = existedTopic.id;
+    if (eventData.timeLimit) {
+      eventData.timeLimit = +eventData.timeLimit;
+    }
+    const url = uploadService.upload(file);
+    eventData.creatorId = req.user.id;
+    const { event, questions, assign } = await eventService.createEvent({ ...eventData }, questionData);
+    res.status(201).json({ event, questions, assign });
+  } catch (error) {
+    next(error);
+  } finally {
+    if (req.file.fieldname === "eventImage") {
+      fs.unlink(req.file.path);
+    }
+  }
+};
 
 // PATCH Edit Event
 eventController.editEvent = async (req, res, next) => {
