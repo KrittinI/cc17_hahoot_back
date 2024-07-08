@@ -123,35 +123,33 @@ eventController.createEvent = async (req, res, next) => {
   try {
     const file = req.file.path;
 
-    const sentEvent = req.body.events;
+    const eventData = JSON.parse(req.body.events);
 
-    const sentQuestion = req.body.question;
+    const questionData = JSON.parse(req.body.question);
+    // const addArr = [sentQuestion];
 
-    const eventData = JSON.parse(sentEvent);
-    const addArr = [sentQuestion];
+    // let questionData;
+    // if (addArr.length > 1) {
+    //   questionData = addArr
+    //     .map((ques) => {
+    //       const obj = ques.split("},{").map((obj, index, array) => {
+    //         // เพิ่มเครื่องหมายวงเล็บปิดและเปิดที่หายไป
+    //         if (index === 0) {
+    //           obj += "}";
+    //         } else if (index === array.length - 1) {
+    //           obj = "{" + obj;
+    //         } else {
+    //           obj = "{" + obj + "}";
+    //         }
+    //         return JSON.parse(obj);
+    //       });
 
-    let questionData;
-    if (addArr.length > 1) {
-      questionData = addArr
-        .map((ques) => {
-          const obj = ques.split("},{").map((obj, index, array) => {
-            // เพิ่มเครื่องหมายวงเล็บปิดและเปิดที่หายไป
-            if (index === 0) {
-              obj += "}";
-            } else if (index === array.length - 1) {
-              obj = "{" + obj;
-            } else {
-              obj = "{" + obj + "}";
-            }
-            return JSON.parse(obj);
-          });
-
-          return obj;
-        })
-        .flat(); //[[]] => []
-    } else {
-      questionData = JSON.parse(addArr);
-    }
+    //       return obj;
+    //     })
+    //     .flat(); //[[]] => []
+    // } else {
+    //   questionData = JSON.parse(addArr);
+    // }
 
     if (!eventData.eventName || !eventData.topicId) {
       createError(400, "Event must have name, topic");
