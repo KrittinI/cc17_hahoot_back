@@ -5,6 +5,7 @@ const uploadService = require("../services/upload-service");
 const userService = require("../services/user-service");
 const createError = require("../utils/create-error");
 const fs = require("fs/promises");
+const cloudinary = require("../config/cloudinary");
 
 const questionController = {};
 
@@ -26,7 +27,10 @@ questionController.getQuestionByTopicId = async (req, res, next) => {
     if (!topicExisted) {
       createError(400, "topicId does not exist");
     }
-    const questionInTopic = await questionService.getQuestionByTopicId(topicExisted.id, req.user.id);
+    const questionInTopic = await questionService.getQuestionByTopicId(
+      topicExisted.id,
+      req.user.id
+    );
     res.status(200).json({ questions: questionInTopic });
   } catch (err) {
     next(err);
@@ -37,7 +41,10 @@ questionController.getQuestionByTopicId = async (req, res, next) => {
 questionController.getQuestionByQuestionId = async (req, res, next) => {
   try {
     const { questionId } = req.params;
-    const question = await questionService.getQuestionByQuestionId(+questionId, req.user.id);
+    const question = await questionService.getQuestionByQuestionId(
+      +questionId,
+      req.user.id
+    );
     if (!question) {
       createError(400, "this question Id does not exist");
     }
@@ -55,7 +62,10 @@ questionController.getQuestionByUserId = async (req, res, next) => {
     if (!existUser) {
       createError(500, "this userId is not found");
     }
-    const questions = await questionService.getQuestionByUserId(existUser.id, req.user.id);
+    const questions = await questionService.getQuestionByUserId(
+      existUser.id,
+      req.user.id
+    );
     res.status(200).json({ questions });
   } catch (err) {
     next(err);
@@ -65,8 +75,10 @@ questionController.getQuestionByUserId = async (req, res, next) => {
 // GET Question by Favorite
 questionController.getFavQuestionByAuthId = async (req, res, next) => {
   try {
-    const questionsId = await favoriteService.findQuestionRelationByUserId(req.user.id)
-    const questions = questionsId.map(question => question.question)
+    const questionsId = await favoriteService.findQuestionRelationByUserId(
+      req.user.id
+    );
+    const questions = questionsId.map((question) => question.question);
     res.status(200).json({ questions });
   } catch (err) {
     next(err);
@@ -90,12 +102,16 @@ questionController.editQuestionByQuestionId = async (req, res, next) => {
   try {
     const { id } = req.user;
     const { questionId } = req.params;
-    const path = await uploadService.upload(req.file.path);
-    const question = { ...req.body, questionPicture: path };
-    console.log(path, "pathhhh");
-    console.log(questionId, "looookkkkk");
+    const data = JSON.parse(req.body.questions);
+    const path = await uploadService.upload(req.file?.path);
+    const question = { ...data, questionPicture: path };
 
-    if (!question.question || !question.choice1 || !question.choice2 || !question.answer) {
+    if (
+      !question.question ||
+      !question.choice1 ||
+      !question.choice2 ||
+      !question.answer
+    ) {
       createError(400, "invalid question");
     }
 
@@ -103,7 +119,7 @@ questionController.editQuestionByQuestionId = async (req, res, next) => {
       createError(400, "invalid question");
     }
 
-    if (question.answer === "D" && (!input.choice3 || !input.choice4)) {
+    if (question.answer === "D" && (!question?.choice3 || !question?.choice4)) {
       createError(400, "invalid question");
     }
 
@@ -111,17 +127,35 @@ questionController.editQuestionByQuestionId = async (req, res, next) => {
     if (!existedTopic) {
       createError(400, "topic not found");
     }
-    const existedQuestion = await questionService.getQuestionByQuestionId(+questionId, +id);
+    const existedQuestion = await questionService.getQuestionByQuestionId(
+      +questionId,
+      +id
+    );
     if (!existedQuestion) {
       createError(400, "this question id does not exist");
     }
-    const updateQuestion = await questionService.editQuestionByQuestionId(existedQuestion.id, question);
+
+    delete question.questionComments;
+
+    if (path && existedQuestion?.questionPicture) {
+      const src = existedQuestion?.questionPicture
+        ?.split("/")
+        .pop()
+        .split(".")[0];
+      await cloudinary.uploader.destroy(src);
+    }
+
+    const updateQuestion = await questionService.editQuestionByQuestionId(
+      existedQuestion.id,
+      question
+    );
+
     res.status(200).json({ question: updateQuestion });
   } catch (err) {
     next(err);
   } finally {
-    if (req.file.fieldname === "questionPicture") {
-      fs.unlink(req.file.path);
+    if (req.file?.fieldname === "questionPicture") {
+      fs.unlink(req.file?.path);
     }
   }
 };
@@ -130,11 +164,15 @@ questionController.editQuestionByQuestionId = async (req, res, next) => {
 questionController.deleteQuestionByQuestionId = async (req, res, next) => {
   try {
     const { questionId } = req.params;
-    const existedQuestion = await questionService.getQuestionByQuestionId(+questionId);
+    const existedQuestion = await questionService.getQuestionByQuestionId(
+      +questionId
+    );
     if (!existedQuestion) {
       createError(400, "this question id does not exist");
     }
-    const question = await questionService.deleteQuestionByQuestionId(existedQuestion.id);
+    const question = await questionService.deleteQuestionByQuestionId(
+      existedQuestion.id
+    );
     console.log("deleted");
     res.status(204).json({ question });
   } catch (err) {

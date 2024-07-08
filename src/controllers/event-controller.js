@@ -73,7 +73,7 @@ eventController.getEventById = async (req, res, next) => {
       createError(400, "event not found");
     }
 
-    const assigns = await assignService.findQuestionInEvent(event.id);
+    const assigns = await assignService.findQuestionInEvent(event.id, req.user.id);
     const questions = assigns.map((assign) => {
       const question = { ...assign.question };
       question.timeLimit = assign.timeLimit;

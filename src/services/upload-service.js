@@ -2,11 +2,9 @@ const cloudinary = require("../config/cloudinary");
 const createError = require("../utils/create-error");
 const uploadService = {};
 uploadService.upload = async (path) => {
-  try {
+  if (path) {
     const { secure_url } = await cloudinary.uploader.upload(path);
     return secure_url;
-  } catch (err) {
-    createError(err.message, 500);
   }
 };
 
