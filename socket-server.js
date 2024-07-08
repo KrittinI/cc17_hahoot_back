@@ -14,34 +14,52 @@ const io = new Server(server, {
 
 let rooms = {};
 
-const quizData = [
+const geographyQuestion = [
   {
-    question: "ตัวละครหลักในเรื่อง Naruto คือใคร?",
-    options: [
-      "Sasuke Uchiha",
-      "Sakura Haruno",
-      "Naruto Uzumaki",
-      "Kakashi Hatake",
-    ],
-    answer: "Naruto Uzumaki",
-    image: "src/assets/hh-hero.png",
+    questionPicture: "src/assets/hh-hero.png",
+    question: `What is the biggest country ?`,
+    choice1: "Russia",
+    choice2: "China",
+    choice3: "India",
+    choice4: "Canada",
+    answer: "A",
+    isPublic: false,
+    topicId: 8,
+    creatorId: 4,
   },
   {
-    question: "ใครเป็นผู้แต่งเรื่อง One Piece?",
-    options: [
-      "Eiichiro Oda",
-      "Masashi Kishimoto",
-      "Yoshihiro Togashi",
-      "Akira Toriyama",
-    ],
-    answer: "Eiichiro Oda",
-    image: "src/assets/hh-hero.png",
+    questionPicture: "src/assets/hh-hero.png",
+    question: `Which state in U.S.A have border only 1 state?`,
+    choice1: "Hawaii",
+    choice2: "Alaska",
+    choice3: "Maine",
+    choice4: "Florida",
+    answer: "C",
+    isPublic: false,
+    topicId: 8,
+    creatorId: 4,
   },
   {
-    question: "ชื่อจริงของ L ในเรื่อง Death Note คืออะไร?",
-    options: ["Light Yagami", "Misa Amane", "L Lawliet", "Near"],
-    answer: "L Lawliet",
-    image: "src/assets/hh-hero.png",
+    question: `Where is Angel Waterfall?`,
+    questionPicture: `https://upload.wikimedia.org/wikipedia/commons/e/e9/SaltoAngel1.jpg`,
+    choice1: "Brazil",
+    choice2: "Columbia",
+    choice3: "Venezuela",
+    choice4: "Argentina",
+    answer: "C",
+    isPublic: false,
+    topicId: 8,
+    creatorId: 4,
+  },
+  {
+    questionPicture: "src/assets/hh-hero.png",
+    question: `The biggest ocean is Pacific Ocean ? `,
+    choice1: "TRUE",
+    choice2: "FALSE",
+    answer: "A",
+    isPublic: false,
+    topicId: 8,
+    creatorId: 4,
   },
 ];
 
@@ -100,16 +118,54 @@ io.on("connection", (socket) => {
       // }
 
       //console.log("Answer = ", quizData[room.currentQuestionIndex].answer);
+      // ex. answer -> "Canada" === "A"
+
+      // let checkAnswer = "";
+      // switch (answer) {
+      //   case geographyQuestion[room.currentQuestionIndex].choice1:
+      //     checkAnswer = "A";
+      //     break;
+      //   case geographyQuestion[room.currentQuestionIndex].choice2:
+      //     checkAnswer = "B";
+      //     break;
+      //   case geographyQuestion[room.currentQuestionIndex].choice3:
+      //     checkAnswer = "C";
+      //     break;
+      //   case geographyQuestion[room.currentQuestionIndex].choice4:
+      //     checkAnswer = "D";
+      //     break;
+      //   default:
+      //     checkAnswer = false;
+      //     break;
+      // }
+      const checkAnswer = (answer) => {
+        switch (answer) {
+          case geographyQuestion[room.currentQuestionIndex].choice1:
+            return "A";
+          case geographyQuestion[room.currentQuestionIndex].choice2:
+            return "B";
+          case geographyQuestion[room.currentQuestionIndex].choice3:
+            return "C";
+          case geographyQuestion[room.currentQuestionIndex].choice4:
+            return "D";
+          default:
+            return false;
+        }
+      };
 
       const correct =
         answer === false
           ? Boolean(false)
-          : Boolean(answer === quizData[room.currentQuestionIndex].answer);
+          : Boolean(
+              checkAnswer(answer) ===
+                geographyQuestion[room.currentQuestionIndex].answer
+            );
 
+      //answer คือคำตอบที่หน้าบ้านส่งมา เทียบกับ คำตอบที่หลังบ้านมีแต่ถ้าเป็น ช้อยต้องหาวิธี
       //console.log(player.name, "of Result = ", correct);
       //console.log("-------------------------------------------------------");
       if (correct) {
-        player.score += 100;
+        player.score += 1000;
       }
       socket.emit("answerResult", {
         correct,
@@ -162,7 +218,7 @@ io.on("connection", (socket) => {
   socket.on("ShowScoreboard", (roomId) => {
     //chcking if LastQuestion in Scoreboard
     const room = rooms[roomId];
-    if (room.currentQuestionIndex < quizData.length - 1) {
+    if (room.currentQuestionIndex < geographyQuestion.length - 1) {
       room.currentQuestionIndex += 1;
     } else {
       io.to(roomId).emit("gameOver");
@@ -202,12 +258,19 @@ io.on("connection", (socket) => {
 
 const sendQuestion = (roomId) => {
   const room = rooms[roomId];
-  if (room && room.currentQuestionIndex < quizData.length) {
+  if (room && room.currentQuestionIndex < geographyQuestion.length) {
     const questionData = {
-      question: quizData[room.currentQuestionIndex].question,
-      options: quizData[room.currentQuestionIndex].options,
-      answer: quizData[room.currentQuestionIndex].answer,
-      image: quizData[room.currentQuestionIndex].image,
+      questionPicture:
+        geographyQuestion[room.currentQuestionIndex].questionPicture,
+      question: geographyQuestion[room.currentQuestionIndex].question,
+      choice1: geographyQuestion[room.currentQuestionIndex].choice1,
+      choice2: geographyQuestion[room.currentQuestionIndex].choice2,
+      choice3: geographyQuestion[room.currentQuestionIndex].choice3,
+      choice4: geographyQuestion[room.currentQuestionIndex].choice4,
+      answer: geographyQuestion[room.currentQuestionIndex].answer,
+      isPublic: geographyQuestion[room.currentQuestionIndex].isPublic,
+      topicId: geographyQuestion[room.currentQuestionIndex].topicId,
+      creatorId: geographyQuestion[room.currentQuestionIndex].creatorId,
     };
     io.to(roomId).emit("newQuestion", questionData);
     console.log("Sent questionData");
