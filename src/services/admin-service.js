@@ -177,6 +177,32 @@ adminService.updateStatus = (userId, status) => {
 adminService.createHero = (data) => {
   return prisma.hero.create({
     data,
+    include: {
+      question1: {
+        select: {
+          question: true,
+          questionPicture: true
+        }
+      },
+      question2: {
+        select: {
+          question: true,
+          questionPicture: true
+        }
+      },
+      question3: {
+        select: {
+          question: true,
+          questionPicture: true
+        }
+      },
+      question4: {
+        select: {
+          question: true,
+          questionPicture: true
+        }
+      }
+    }
   });
 };
 
