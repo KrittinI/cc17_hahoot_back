@@ -2,6 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const morgan = require("morgan");
+const socketio = require("socket.io");
 const notFoundMiddleware = require("./src/middlewares/not-found");
 const errorMiddleware = require("./src/middlewares/error-middlewares");
 const authRoute = require("./src/routes/auth-route");
@@ -14,6 +15,7 @@ const adminRouter = require("./src/routes/admin-route");
 const adminValidate = require("./src/middlewares/admin-validator");
 const adminController = require("./src/controllers/adminController");
 const playRouter = require("./src/routes/play-route");
+const ioServer = require("./socket-server");
 
 const app = express();
 
@@ -36,4 +38,14 @@ app.use(errorMiddleware);
 
 const PORT = process.env.PORT || 8800;
 console.log(process.env.DATABASE_URL);
-app.listen(PORT, () => console.log(`Server run on PORT ${PORT}`));
+const server = app.listen(PORT, () => console.log(`Server run on PORT ${PORT}`));
+
+const io = socketio(server, {
+    cors: {
+        origin: "*", // ปรับนี้ใน production ให้เป็น origin เฉพาะ
+    },
+});
+
+io.on("connection", (socket) => ioServer(socket, io))
+
+
