@@ -121,11 +121,17 @@ eventController.getEventById = async (req, res, next) => {
 // };
 eventController.createEvent = async (req, res, next) => {
   try {
-    const file = req.file.path;
-
     const eventData = JSON.parse(req.body.events);
-
     const questionData = JSON.parse(req.body.question);
+
+    if (req.file) {
+      console.log(req.file);
+      const file = req.file.path;
+      const url = await uploadService.upload(file);
+      eventData.eventImage = url;
+    } else {
+      eventData.eventImage = null;
+    }
     // const addArr = [sentQuestion];
 
     // let questionData;
@@ -163,18 +169,25 @@ eventController.createEvent = async (req, res, next) => {
     if (eventData.timeLimit) {
       eventData.timeLimit = +eventData.timeLimit;
     }
-    const url = await uploadService.upload(file);
-    console.log(url);
-    eventData.eventImage = url;
+    // const url = await uploadService.upload(file);
+
+    // if (!url) {
+    //   eventData.eventImage = null;
+    // } else {
+    //   eventData.eventImage = url;
+    // }
     eventData.creatorId = req.user.id;
     const { event, questions, assign } = await eventService.createEvent({ ...eventData }, questionData);
-
     res.status(201).json({ event, questions, assign });
   } catch (error) {
     next(error);
   } finally {
-    if (req.file.fieldname === "eventImage") {
-      fs.unlink(req.file.path);
+    if (req.file) {
+      if (req.file.fieldname === "eventImage") {
+        fs.unlink(req.file.path);
+      }
+    } else {
+      return;
     }
   }
 };
