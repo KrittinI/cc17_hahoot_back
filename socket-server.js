@@ -42,7 +42,7 @@ const ioServer = (socket, io) => {
     if (rooms[roomId]) {
       rooms[roomId].players.push({ id: socket.id, name, score: 0 });
       socket.join(roomId);
-      socket.emit("joinedRoom");
+      socket.emit("joinedRoom", { id: socket.id });
       io.to(roomId).emit(
         "updatePlayers",
         rooms[roomId].players.map((player) => player.name)
@@ -65,10 +65,9 @@ const ioServer = (socket, io) => {
     }
   });
 
-  socket.on("submitAnswer", ({ roomId, answer, timeLeft }) => {
+  socket.on("submitAnswer", ({ roomId, answer, timeLeft, playerId, questionId }) => {
     const room = rooms[roomId];
-    console.log("00000000000000000000000000000000000000000000000000000000000000000000000");
-    console.log(room.players);
+    console.log("000000000000000000000000000000000000000000000000000000000000000000000");
     const player = room.players.find((p) => p.id === socket.id);
     if (player && !player.hasAnswered && player.id !== room.owner) {
       player.hasAnswered = true;
@@ -94,10 +93,10 @@ const ioServer = (socket, io) => {
       const nonOwnerPlayers = room.players.filter((p) => p.id !== room.owner);
       //    if(room.answeredPlayers === 3) is working
       if (nonOwnerPlayers.every((p) => p.hasAnswered)) {
-        console.log(
-          "answeredPlayers in filterNonOwner =>",
-          room.answeredPlayers
-        );
+        // console.log(
+        //   "answeredPlayers in filterNonOwner =>",
+        //   room.answeredPlayers
+        // );
 
         io.to(roomId).emit("showAnswer");
         //reset to Next Questions
@@ -116,7 +115,7 @@ const ioServer = (socket, io) => {
 
   socket.on("nextQuestion", (roomId) => {
     const room = rooms[roomId];
-    console.log("RoomID in nextQuestion=", room);
+    // console.log("RoomID in nextQuestion=", room);
     room.answerCounts = { A: 0, B: 0, C: 0, D: 0 }; // Reset counts for next question
     io.to(roomId).emit("newQuestion", room.questions[room.currentQuestionIndex]);
     console.log("nextQuestion Backend is working");
