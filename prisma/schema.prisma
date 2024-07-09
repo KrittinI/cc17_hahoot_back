@@ -57,19 +57,18 @@ model Event {
 }
 
 model Room {
-  id           Int    @id @default(autoincrement())
-  roomId       String @map("room_id") @db.VarChar(255)
-  eventId      Int    @map("event_id")
-  participanId Int    @map("participant_id")
+  id            Int    @id @default(autoincrement())
+  roomId        String @map("room_id") @db.VarChar(255)
+  eventId       Int    @map("event_id")
+  participantId String @map("participant_id")
 
   event      Event       @relation(fields: [eventId], references: [id])
-  paticipant Participant @relation(fields: [participanId], references: [id])
+  paticipant Participant @relation(fields: [participantId], references: [id])
 }
 
 model Participant {
-  id            Int    @id @default(autoincrement())
-  participantId String @map("participant_id") @db.VarChar(255)
-  username      String @unique @db.VarChar(20)
+  id       String @id
+  username String @unique @db.VarChar(20)
 
   AnswerOfBridges AnswerOfBridge[]
   Room            Room[]
@@ -92,7 +91,7 @@ model AnswerOfBridge {
   id            Int     @id @default(autoincrement())
   answer        Boolean @default(false)
   questionId    Int     @map("question_id")
-  participantId Int     @map("participant_id")
+  participantId String  @map("participant_id")
   timeStamp     Int?    @map("time_stamp")
 
   participant Participant @relation(fields: [participantId], references: [id])

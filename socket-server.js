@@ -1,4 +1,5 @@
 const { event, room } = require("./src/models/prisma");
+const gameService = require("./src/services/game-service");
 
 //Backend Multiplayer
 let rooms = {};
@@ -52,6 +53,8 @@ const ioServer = (socket, io) => {
   });
 
   socket.on("startGame", (roomId) => {
+    console.log(roomId, rooms[roomId]);
+    gameService.startGame(roomId, rooms[roomId])
     if (rooms[roomId] && rooms[roomId].owner === socket.id) {
       rooms[roomId].isGameStarted = true;
       io.to(roomId).emit("gameStarted");
@@ -64,6 +67,8 @@ const ioServer = (socket, io) => {
 
   socket.on("submitAnswer", ({ roomId, answer, timeLeft }) => {
     const room = rooms[roomId];
+    console.log("00000000000000000000000000000000000000000000000000000000000000000000000");
+    console.log(room.players);
     const player = room.players.find((p) => p.id === socket.id);
     if (player && !player.hasAnswered && player.id !== room.owner) {
       player.hasAnswered = true;
