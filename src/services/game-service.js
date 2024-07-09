@@ -11,7 +11,7 @@ gameService.startGame = (roomId, roomData) => prisma.$transaction(async (tx) => 
     await tx.room.createMany({ data: rooms })
 })
 
-gameService.submitAnswer = (data) => prisma.answerOfBridge.create({ data })
+gameService.submitAnswer = async (data) => prisma.answerOfBridge.create({ data })
 
 module.exports = gameService
 

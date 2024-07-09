@@ -90,6 +90,9 @@ const ioServer = (socket, io) => {
         score: player.score,
       });
 
+      const data = { answer: correct, timeStamp: timeLeft, participantId: playerId, questionId }
+      gameService.submitAnswer(data)
+
       const nonOwnerPlayers = room.players.filter((p) => p.id !== room.owner);
       //    if(room.answeredPlayers === 3) is working
       if (nonOwnerPlayers.every((p) => p.hasAnswered)) {
