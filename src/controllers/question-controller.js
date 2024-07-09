@@ -103,6 +103,7 @@ questionController.editQuestionByQuestionId = async (req, res, next) => {
     const { id } = req.user;
     const { questionId } = req.params;
     const data = JSON.parse(req.body.questions);
+    console.log(data, "daaaataaaa");
     const path = await uploadService.upload(req.file?.path);
     const question = { ...data, questionPicture: path };
 

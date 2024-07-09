@@ -30,7 +30,7 @@ const checkQuestionMiddleware = async (req, res, next) => {
         createError(400, "topic not found");
       }
       data[i].questionPicture = image[i];
-      data[i].isPublic = Boolean(data[i].isPublic);
+      data[i].isDelete = Boolean(data[i].isDelete);
       data[i].topicId = +data[i].topicId;
       data[i].creatorId = req.user.id;
     }
