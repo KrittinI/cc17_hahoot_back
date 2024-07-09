@@ -60,6 +60,7 @@ questionService.getQuestionByQuestionId = (id, userId) => {
       QuestionFavorite: {
         where: { userId },
       },
+      assignOfBridges: true,
     },
   });
 };
