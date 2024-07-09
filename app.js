@@ -36,16 +36,16 @@ app.use("/play-game", playRouter);
 app.use(notFoundMiddleware);
 app.use(errorMiddleware);
 
-const PORT = process.env.PORT || 8800;
+const PORT = process.env.PORT || 8000;
 console.log(process.env.DATABASE_URL);
-const server = app.listen(PORT, () => console.log(`Server run on PORT ${PORT}`));
+const server = app.listen(PORT, () =>
+  console.log(`Server run on PORT ${PORT}`)
+);
 
 const io = socketio(server, {
-    cors: {
-        origin: "*", // ปรับนี้ใน production ให้เป็น origin เฉพาะ
-    },
+  cors: {
+    origin: "*", // ปรับนี้ใน production ให้เป็น origin เฉพาะ
+  },
 });
 
-io.on("connection", (socket) => ioServer(socket, io))
-
-
+io.on("connection", (socket) => ioServer(socket, io));
