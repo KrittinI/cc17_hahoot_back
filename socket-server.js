@@ -121,25 +121,6 @@ io.on("connection", (socket) => {
       //console.log("Answer = ", quizData[room.currentQuestionIndex].answer);
       // ex. answer -> "Canada" === "A"
 
-      // let checkAnswer = "";
-      // switch (answer) {
-      //   case geographyQuestion[room.currentQuestionIndex].choice1:
-      //     checkAnswer = "A";
-      //     break;
-      //   case geographyQuestion[room.currentQuestionIndex].choice2:
-      //     checkAnswer = "B";
-      //     break;
-      //   case geographyQuestion[room.currentQuestionIndex].choice3:
-      //     checkAnswer = "C";
-      //     break;
-      //   case geographyQuestion[room.currentQuestionIndex].choice4:
-      //     checkAnswer = "D";
-      //     break;
-      //   default:
-      //     checkAnswer = false;
-      //     break;
-      // }
-
       const checkAnswer = (answer) => {
         switch (answer) {
           case geographyQuestion[room.currentQuestionIndex].choice1:
@@ -174,11 +155,18 @@ io.on("connection", (socket) => {
       //console.log("-----------------------------------------------------");
 
       if (correct) {
-        player.score += 1000;
+        // Received score from Frontend no matter + score again
+        player.score += 0;
       }
+
       socket.emit("answerResult", {
         correct,
-        score: player.score,
+        scoreFromBackend: player.score,
+      });
+
+      socket.on("updateScores", (scoreFromFrontend) => {
+        console.log("scoreFromFrontend=", scoreFromFrontend);
+        player.score += scoreFromFrontend;
       });
 
       //if (isTimeout) player.hasAnswered = false;
@@ -210,6 +198,12 @@ io.on("connection", (socket) => {
     }
     //if (isTimeout) player.hasAnswered = false;
   });
+
+  // socket.on("updateScores",(score) => {
+  //   //room.players
+  //   //io.to(roomId).emit("updateScores", room.players);
+
+  // })
 
   socket.on("nextQuestion", (roomId) => {
     const room = rooms[roomId];
