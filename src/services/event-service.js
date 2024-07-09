@@ -86,6 +86,7 @@ eventService.findEventById = (id, userId) =>
         where: { userId },
       },
       EventComments: true,
+      Room: true,
     },
   });
 
@@ -99,11 +100,11 @@ eventService.createEvent = (body, question) =>
       include: {
         user: {
           select: {
-            profileImage: true
-          }
+            profileImage: true,
+          },
         },
-        topic: true
-      }
+        topic: true,
+      },
     });
 
     // *************************** Create New Question

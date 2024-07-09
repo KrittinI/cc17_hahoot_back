@@ -165,7 +165,7 @@ eventController.createEvent = async (req, res, next) => {
     }
     const url = await uploadService.upload(file);
     console.log(url);
-    eventData.eventImage = url
+    eventData.eventImage = url;
     eventData.creatorId = req.user.id;
     const { event, questions, assign } = await eventService.createEvent({ ...eventData }, questionData);
 
@@ -201,6 +201,8 @@ eventController.editEvent = async (req, res, next) => {
     if (eventData.timeLimit) {
       eventData.timeLimit = +eventData.timeLimit;
     }
+    delete req.body.Room;
+    console.log(req.body, "reqbody");
 
     const updateEvent = await eventService.updateEvent(+eventId, req.body);
     res.status(200).json(updateEvent);
