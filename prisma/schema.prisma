@@ -68,7 +68,7 @@ model Room {
 
 model Participant {
   id       String @id
-  username String @unique @db.VarChar(20)
+  username String @db.VarChar(20)
 
   AnswerOfBridges AnswerOfBridge[]
   Room            Room[]
