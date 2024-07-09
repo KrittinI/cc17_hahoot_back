@@ -27,8 +27,8 @@ model User {
   username       String? @unique @db.VarChar(100)
   isAdmin        Boolean @default(false) @map("is_admin")
   profileImage   String? @map("profile_image")
-  googleImage    String? @map(" google_image")
-  isActive       Boolean @default(false) @map("is_active")
+  googleImage    String? @map("google_image")
+  isActive       Boolean @default(true) @map("is_active")
 
   events            Event[]
   EventComments     EventComment[]
@@ -57,21 +57,19 @@ model Event {
 }
 
 model Room {
-  id           String   @id @default(uuid())
-  eventId      Int      @map("event_id")
-  participanId String   @map("participant_id")
-  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamp(3)
+  id           Int    @id @default(autoincrement())
+  roomId       String @map("room_id") @db.VarChar(255)
+  eventId      Int    @map("event_id")
+  participanId Int    @map("participant_id")
 
   event      Event       @relation(fields: [eventId], references: [id])
   paticipant Participant @relation(fields: [participanId], references: [id])
 }
 
 model Participant {
-  id            String @id @default(uuid())
+  id            Int    @id @default(autoincrement())
+  participantId String @map("participant_id") @db.VarChar(255)
   username      String @unique @db.VarChar(20)
-  profileAvatar String @map("profile_avatar")
-  raceTime      Int    @map("race_time")
-  eventId       Int    @map("event_id")
 
   AnswerOfBridges AnswerOfBridge[]
   Room            Room[]
@@ -79,14 +77,13 @@ model Participant {
 
 model AssignOfBridge {
   id         Int @id @default(autoincrement())
-  timeLimit  Int @default(10) @map("time_limit")
+  timeLimit  Int @default(20) @map("time_limit")
   eventId    Int @map("event_id")
   questionId Int @map("question_id")
   order      Int
 
-  event           Event            @relation(fields: [eventId], references: [id])
-  question        Question         @relation(fields: [questionId], references: [id])
-  AnswerOfBridges AnswerOfBridge[]
+  event    Event    @relation(fields: [eventId], references: [id])
+  question Question @relation(fields: [questionId], references: [id])
 
   @@map("assign_of_bridge")
 }
@@ -94,12 +91,12 @@ model AssignOfBridge {
 model AnswerOfBridge {
   id            Int     @id @default(autoincrement())
   answer        Boolean @default(false)
-  assignId      Int     @map("assign_id")
-  participantId String  @map("participant_id")
+  questionId    Int     @map("question_id")
+  participantId Int     @map("participant_id")
   timeStamp     Int?    @map("time_stamp")
 
-  assign      AssignOfBridge @relation(fields: [assignId], references: [id])
-  participant Participant    @relation(fields: [participantId], references: [id])
+  participant Participant @relation(fields: [participantId], references: [id])
+  Question    Question    @relation(fields: [questionId], references: [id])
 
   @@map("answer_of_bridge")
 }
@@ -154,6 +151,7 @@ model Question {
   assignOfBridges  AssignOfBridge[]
   questionComments QuestionComment[]
   QuestionFavorite QuestionFavorite[]
+  AnswerOfBridge   AnswerOfBridge[]
 
   Hero1 Hero[] @relation(name: "quiz1")
   Hero2 Hero[] @relation(name: "quiz2")

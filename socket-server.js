@@ -1,152 +1,25 @@
+const { event, room } = require("./src/models/prisma");
+
 //Backend Multiplayer
-const { createServer } = require("http");
-const { Server } = require("socket.io");
-
-// สร้าง HTTP server
-const server = createServer();
-
-// เริ่มต้น Socket.IO server
-const io = new Server(server, {
-  cors: {
-    origin: "*", // ปรับนี้ใน production ให้เป็น origin เฉพาะ
-  },
-});
-
 let rooms = {};
 
-const geographyQuestion = [
-  {
-    questionPicture: "src/assets/hh-hero.png",
-    question: `What is the biggest country ?`,
-    choice1: "Russia",
-    choice2: "China",
-    choice3: "India",
-    choice4: "Canada",
-    answer: "A",
-    isPublic: false,
-    topicId: 8,
-    creatorId: 4,
-  },
-  {
-    questionPicture: "src/assets/hh-hero.png",
-    question: `Which state in U.S.A have border only 1 state?`,
-    choice1: "Hawaii",
-    choice2: "Alaska",
-    choice3: "Maine",
-    choice4: "Florida",
-    answer: "C",
-    isPublic: false,
-    topicId: 8,
-    creatorId: 4,
-  },
-  {
-    question: `Where is Angel Waterfall?`,
-    questionPicture: `https://upload.wikimedia.org/wikipedia/commons/e/e9/SaltoAngel1.jpg`,
-    choice1: "Brazil",
-    choice2: "Columbia",
-    choice3: "Venezuela",
-    choice4: "Argentina",
-    answer: "C",
-    isPublic: false,
-    topicId: 8,
-    creatorId: 4,
-  },
-  {
-    question: `คิดว่าใครจะชนะในศึกฟุตบอลยูโร 2024?`,
-    questionPicture: `https://www.rushbar.fr/wp-content/uploads/2024/05/22700824-euro-2024-allemagne-officiel-logo-avec-nom-bleu-symbole-europeen-football-final-conception-vecteur-illustration-gratuit-vectoriel.jpg`,
-    choice1: "England",
-    choice2: "Spain",
-    choice3: "Netherlands",
-    choice4: "France",
-    answer: "B",
-    isPublic: false,
-    topicId: 8,
-    creatorId: 4,
-  },
-  {
-    question: `ใครหล่อสุดใน CC-17 Codecamp?`,
-    questionPicture: `https://media.licdn.com/dms/image/C560BAQFzqgedOoX_rg/company-logo_200_200/0/1630644648038?e=2147483647&v=beta&t=rwNV9IHdP81Awn7vVor2AtnI6RqVmDmKVRFXbUpuRF4`,
-    choice1: "Boom",
-    choice2: "Gong",
-    choice3: "KK",
-    choice4: "Pae",
-    answer: "D",
-    isPublic: false,
-    topicId: 8,
-    creatorId: 4,
-  },
-  {
-    question: `สุ่มมั่ว 123`,
-    questionPicture: `https://ioflood.com/blog/wp-content/uploads/2023/10/java_logo_dice_random.jpg`,
-    choice1: "awd#%aw",
-    choice2: "ewf33",
-    choice3: "awda(xd",
-    choice4: "il2o!as24",
-    answer: "A",
-    isPublic: false,
-    topicId: 8,
-    creatorId: 4,
-  },
-  {
-    question: `สุ่มมั่ว 123$%& Again`,
-    questionPicture: `https://ioflood.com/blog/wp-content/uploads/2023/10/java_logo_dice_random.jpg`,
-    choice1: "awd#%aw",
-    choice2: "ewf33",
-    choice3: "awda(xd",
-    choice4: "il2o!as24",
-    answer: "B",
-    isPublic: false,
-    topicId: 8,
-    creatorId: 4,
-  },
-  {
-    question: `กดปุ่มไหนในรูปด้านล่างถึงจะถูกต้อง?`,
-    questionPicture: `https://cdn.britannica.com/15/193115-050-0D385DDA/Collage-cats-cat-quiz-Mendel.jpg`,
-    choice1: "ปุ่มซ้ายบน",
-    choice2: "ปุ่มขวาล่าง",
-    choice3: "ปุ่มตรงกลาง",
-    choice4: "ปุ่มซ้ายล่าง",
-    answer: "C",
-    isPublic: false,
-    topicId: 8,
-    creatorId: 4,
-  },
-  {
-    question: `ในภาพนี้มีแมวทั้งหมดกี่ตัว?`,
-    questionPicture: `https://cdn.britannica.com/15/193115-050-0D385DDA/Collage-cats-cat-quiz-Mendel.jpg`,
-    choice1: "2 ตัว",
-    choice2: "4 ตัว",
-    choice3: "6 ตัว",
-    choice4: "แมวไหน?",
-    answer: "D",
-    isPublic: false,
-    topicId: 8,
-    creatorId: 4,
-  },
-  {
-    question: `ในภาพนี้คนไหนกำลังคิดอะไรอยู่?`,
-    questionPicture: `https://cdn.britannica.com/15/193115-050-0D385DDA/Collage-cats-cat-quiz-Mendel.jpg`,
-    choice1: "คนแรก",
-    choice2: "คนที่สอง",
-    choice3: "คนที่สาม",
-    choice4: "ทุกคนกำลังคิดอะไรบางอย่าง",
-    answer: "A",
-    isPublic: false,
-    topicId: 8,
-    creatorId: 4,
-  },
-];
-
-io.on("connection", (socket) => {
+const ioServer = (socket, io) => {
+  socket.onAny((event, ...arg) => {
+    console.log("Receive Event", event);
+    console.log("With Arg", arg);
+  })
+  // console.log(rooms);
   console.log("A user connected");
 
-  socket.on("createRoom", (name) => {
+  socket.on("createRoom", ({ name, questions, eventId }) => {
     const roomId = Math.random().toString(36).substring(2, 10);
     rooms[roomId] = {
       owner: socket.id,
       players: [{ id: socket.id, name, score: 0 }],
+      eventId: eventId,
       currentQuestionIndex: 0,
       answeredPlayers: 0,
+      questions: questions,
       isGameStarted: false,
       answerCounts: {
         A: 0,
@@ -182,91 +55,36 @@ io.on("connection", (socket) => {
     if (rooms[roomId] && rooms[roomId].owner === socket.id) {
       rooms[roomId].isGameStarted = true;
       io.to(roomId).emit("gameStarted");
-      sendQuestion(roomId);
+      // sendQuestion(roomId, io);
+      const room = rooms[roomId]
+      io.to(roomId).emit("newQuestion", room.questions[room.currentQuestionIndex]);
+      console.log("Sent questionData");
     }
   });
 
-  socket.on("submitAnswer", ({ roomId, answer, isTimeout }) => {
+  socket.on("submitAnswer", ({ roomId, answer, timeLeft }) => {
     const room = rooms[roomId];
     const player = room.players.find((p) => p.id === socket.id);
-    //&& player.id !== room.owner
     if (player && !player.hasAnswered && player.id !== room.owner) {
       player.hasAnswered = true;
       room.answeredPlayers += 1;
 
       io.to(roomId).emit("answerCount", room.answeredPlayers);
 
-      //socket.emit("answerCount", room.answeredPlayers);
-      //if (isTimeout) return;
-      // if (!isTimeout) {
-      // }
-
-      //console.log("Answer = ", quizData[room.currentQuestionIndex].answer);
-      // ex. answer -> "Canada" === "A"
-
-      // let checkAnswer = "";
-      // switch (answer) {
-      //   case geographyQuestion[room.currentQuestionIndex].choice1:
-      //     checkAnswer = "A";
-      //     break;
-      //   case geographyQuestion[room.currentQuestionIndex].choice2:
-      //     checkAnswer = "B";
-      //     break;
-      //   case geographyQuestion[room.currentQuestionIndex].choice3:
-      //     checkAnswer = "C";
-      //     break;
-      //   case geographyQuestion[room.currentQuestionIndex].choice4:
-      //     checkAnswer = "D";
-      //     break;
-      //   default:
-      //     checkAnswer = false;
-      //     break;
-      // }
-
-      const checkAnswer = (answer) => {
-        switch (answer) {
-          case geographyQuestion[room.currentQuestionIndex].choice1:
-            return "A";
-          case geographyQuestion[room.currentQuestionIndex].choice2:
-            return "B";
-          case geographyQuestion[room.currentQuestionIndex].choice3:
-            return "C";
-          case geographyQuestion[room.currentQuestionIndex].choice4:
-            return "D";
-          default:
-            return false;
-        }
-      };
-
-      const choice = checkAnswer(answer);
-      if (choice) {
-        room.answerCounts[choice] += 1;
+      if (answer) {
+        room.answerCounts[answer] += 1;
         io.to(roomId).emit("RoomAnswerCount", room.answerCounts);
       }
 
-      const correct =
-        answer === false
-          ? Boolean(false)
-          : Boolean(
-              checkAnswer(answer) ===
-                geographyQuestion[room.currentQuestionIndex].answer
-            );
+      const correct = answer === room.questions[room.currentQuestionIndex].answer
 
-      //answer คือคำตอบที่หน้าบ้านส่งมา เทียบกับ คำตอบที่หลังบ้านมีแต่ถ้าเป็น ช้อยต้องหาวิธี
-      //console.log(player.name, "of Result = ", correct);
-      //console.log("-------------------------------------------------------");
       if (correct) {
-        player.score += 1000;
+        player.score += timeLeft * 50;
       }
       socket.emit("answerResult", {
         correct,
         score: player.score,
       });
-
-      //if (isTimeout) player.hasAnswered = false;
-
-      // !important ** Check if all non-owner players have answered **
-      //const TimeoutPlayers = room.players.filter((p) => p);
 
       const nonOwnerPlayers = room.players.filter((p) => p.id !== room.owner);
       //    if(room.answeredPlayers === 3) is working
@@ -286,8 +104,6 @@ io.on("connection", (socket) => {
       } else {
         //player.hasAnswered = false;
       }
-      console.log("room=", room);
-      console.log("player=", player);
       console.log("-------------------------------------------------------");
     }
     //if (isTimeout) player.hasAnswered = false;
@@ -295,26 +111,20 @@ io.on("connection", (socket) => {
 
   socket.on("nextQuestion", (roomId) => {
     const room = rooms[roomId];
-    console.log("RoomID in nextQuestion=", roomId);
-
-    //if (room && room.currentQuestionIndex < quizData.length - 1) {
-    //room.currentQuestionIndex += 1;
+    console.log("RoomID in nextQuestion=", room);
     room.answerCounts = { A: 0, B: 0, C: 0, D: 0 }; // Reset counts for next question
-    sendQuestion(roomId);
+    io.to(roomId).emit("newQuestion", room.questions[room.currentQuestionIndex]);
     console.log("nextQuestion Backend is working");
-    //} else {
-    //  io.to(roomId).emit("gameOver");
-    //  console.log("The Game is Over");
-    //}
   });
 
   socket.on("ShowScoreboard", (roomId) => {
     //chcking if LastQuestion in Scoreboard
     const room = rooms[roomId];
-    if (room.currentQuestionIndex < geographyQuestion.length - 1) {
+    if (room.currentQuestionIndex < room.questions.length - 1) {
       room.currentQuestionIndex += 1;
     } else {
       io.to(roomId).emit("gameOver");
+      console.log(room);
       console.log("The Game is Over");
     }
   });
@@ -336,8 +146,6 @@ io.on("connection", (socket) => {
         delete rooms[roomId];
       } else {
         if (room.owner === socket.id) {
-          //room.owner = room.players[0].id;
-          //io.to(room.owner).emit("isOwner");
           io.to(roomId).emit("ownerDisconnected");
         }
         io.to(roomId).emit(
@@ -347,34 +155,6 @@ io.on("connection", (socket) => {
       }
     }
   });
-});
-
-const sendQuestion = (roomId) => {
-  const room = rooms[roomId];
-  if (room && room.currentQuestionIndex < geographyQuestion.length) {
-    const questionData = {
-      questionPicture:
-        geographyQuestion[room.currentQuestionIndex].questionPicture,
-      question: geographyQuestion[room.currentQuestionIndex].question,
-      choice1: geographyQuestion[room.currentQuestionIndex].choice1,
-      choice2: geographyQuestion[room.currentQuestionIndex].choice2,
-      choice3: geographyQuestion[room.currentQuestionIndex].choice3,
-      choice4: geographyQuestion[room.currentQuestionIndex].choice4,
-      answer: geographyQuestion[room.currentQuestionIndex].answer,
-      isPublic: geographyQuestion[room.currentQuestionIndex].isPublic,
-      topicId: geographyQuestion[room.currentQuestionIndex].topicId,
-      creatorId: geographyQuestion[room.currentQuestionIndex].creatorId,
-    };
-    io.to(roomId).emit("newQuestion", questionData);
-    console.log("Sent questionData");
-  } else {
-    io.to(roomId).emit("gameOver");
-    console.log("The Game is Over from sendQuestionFN");
-  }
 };
 
-// เริ่มเซิร์ฟเวอร์และฟังที่ IP address 0.0.0.0
-const PORT = process.env.PORT || 4000;
-server.listen(PORT, "0.0.0.0", () => {
-  console.log(`Socket Server is running on port ${PORT}`);
-});
+module.exports = ioServer

@@ -8,7 +8,7 @@ const eventFilter = {
   dueDate: true,
   creatorId: true,
   topicId: true,
-  isPublic: true,
+  isDelete: true,
 };
 
 const eventService = {};

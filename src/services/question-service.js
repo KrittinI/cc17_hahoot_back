@@ -5,7 +5,6 @@ const questionService = {};
 
 questionService.getAllQuestion = (userId) => {
   return prisma.question.findMany({
-    // where: { isPublic: true },
     include: {
       user: {
         select: {
@@ -113,7 +112,7 @@ questionService.createQuestions = (questions) => {
 questionService.editQuestionByQuestionId = (questionId, newInfo) => {
   // delete newInfo.id;
   const { id, topic, topicId, creatorId, QuestionFavorite, user, index, ...data } = newInfo;
-  const newestInfo = { ...data, isPublic: Boolean(+newInfo.isPublic) };
+  const newestInfo = { ...data, isDelete: Boolean(+newInfo.isDelete) };
   return prisma.question.update({
     where: {
       id: questionId,
