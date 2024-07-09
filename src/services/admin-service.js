@@ -63,7 +63,12 @@ adminService.getAllData = async () => {
       }
     }
   })
-  result.rooms = await prisma.room.findMany()
+  result.rooms = await prisma.room.groupBy({
+    by: ['roomId', "eventId"],
+    _count: {
+      participantId: true
+    },
+  })
   result.heros = await prisma.hero.findMany({
     include: {
       question1: {
