@@ -20,6 +20,7 @@ authController.register = async (req, res, next) => {
     }
     if (data.password) {
       data.password = await hashService.hash(data.password);
+      delete data.confirmPassword
     }
     if (data.googlePassword) {
       data.googlePassword = await hashService.hash(data.googlePassword);
