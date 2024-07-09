@@ -12,7 +12,7 @@ const ioServer = (socket, io) => {
   console.log("A user connected");
 
   socket.on("createRoom", ({ name, questions, eventId }) => {
-    const roomId = Math.random().toString(36).substring(2, 10);
+    const roomId = Math.floor(1000 + Math.random() * 9000);
     rooms[roomId] = {
       owner: socket.id,
       players: [{ id: socket.id, name, score: 0 }],
@@ -36,6 +36,10 @@ const ioServer = (socket, io) => {
       "updatePlayers",
       rooms[roomId].players.map((player) => player.name)
     );
+    console.log(
+      "PLAYERNAME CREATEROOM=",
+      rooms[roomId].players.map((player) => player.name)
+    );
   });
 
   socket.on("joinRoom", ({ roomId, name }) => {
@@ -45,6 +49,10 @@ const ioServer = (socket, io) => {
       socket.emit("joinedRoom");
       io.to(roomId).emit(
         "updatePlayers",
+        rooms[roomId].players.map((player) => player.name)
+      );
+      console.log(
+        "PLAYERNAME JOINROOM=",
         rooms[roomId].players.map((player) => player.name)
       );
     } else {
