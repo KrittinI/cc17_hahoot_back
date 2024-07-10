@@ -59,8 +59,10 @@ questionService.getQuestionByQuestionId = (id, userId) => {
       questionComments: {
         select: {
           comment: true,
+          rate: true,
           user: {
             select: {
+              id: true,
               username: true,
               profileImage: true,
               googleImage: true
