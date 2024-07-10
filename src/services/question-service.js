@@ -56,7 +56,20 @@ questionService.getQuestionByQuestionId = (id, userId) => {
         },
       },
       topic: true,
-      questionComments: true,
+      questionComments: {
+        select: {
+          comment: true,
+          rate: true,
+          user: {
+            select: {
+              id: true,
+              username: true,
+              profileImage: true,
+              googleImage: true
+            }
+          }
+        }
+      },
       QuestionFavorite: {
         where: { userId },
       },
