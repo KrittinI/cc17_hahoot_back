@@ -14,10 +14,11 @@ gameService.startGame = (roomId, roomData) =>
       roomId,
       eventId: roomData.eventId,
     }));
-    console.log("rooms", rooms);
     await tx.participant.createMany({ data: participants });
     await tx.room.createMany({ data: rooms });
   });
+
+gameService.submitAnswer = (data) => prisma.answerOfBridge.create({ data })
 
 module.exports = gameService;
 
