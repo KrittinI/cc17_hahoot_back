@@ -87,6 +87,12 @@ eventService.findEventById = (id, userId) =>
       },
       EventComments: true,
       Room: true,
+      assignOfBridges: {
+        select: {
+          timeLimit: true,
+          questionId: true,
+        },
+      },
     },
   });
 
@@ -134,6 +140,7 @@ eventService.createEvent = (body, question) =>
 eventService.updateEvent = (id, body) =>
   prisma.$transaction(async (tx) => {
     const result = {};
+
     // *************************** Update Event
     const updateEvents = await tx.event.update({
       where: { id },
@@ -141,6 +148,7 @@ eventService.updateEvent = (id, body) =>
     });
 
     // *************************** Delete Assign
+    // if (body.questions.length !== 0) {
     await tx.assignOfBridge.deleteMany({
       where: { eventId: id, questionId: { in: body.assignDelete } },
     });
@@ -162,22 +170,27 @@ eventService.updateEvent = (id, body) =>
       const assignData = {};
       assignData.eventId = id;
       assignData.order = index++;
-      if (!question.id) {
-        const newQuestion = await tx.question.create({ data: question });
-        assignData.questionId = newQuestion.id;
-        questions.push(newQuestion);
-      } else {
-        assignData.questionId = question.id;
-        questions.push(question);
-      }
+      // if (!question.id) {
+      //   const newQuestion = await tx.question.create({ data: question });
+      //   assignData.questionId = newQuestion.id;
+      //   questions.push(newQuestion);
+      // } else {
+      assignData.questionId = question.id;
+      questions.push(question);
+      // }
       assign.push(assignData);
     }
     // *************************** Update Assign
+
     await tx.assignOfBridge.createMany({ data: assign });
 
     result.events = updateEvents;
     result.assign = assign;
     return result;
   });
+
+eventService.deleteEventById = (id) => {
+  return prisma.event.update({ where: { id }, data: { isDelete: true } });
+};
 
 module.exports = eventService;
