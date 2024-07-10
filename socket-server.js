@@ -8,12 +8,12 @@ const ioServer = (socket, io) => {
   socket.onAny((event, ...arg) => {
     console.log("Receive Event", event);
     console.log("With Arg", arg);
-  })
+  });
   // console.log(rooms);
   console.log("A user connected");
 
   socket.on("createRoom", ({ name, questions, eventId }) => {
-    const roomId = Math.random().toString(36).substring(2, 10);
+    const roomId = Math.floor(1000 + Math.random() * 9000);
     rooms[roomId] = {
       owner: socket.id,
       players: [{ id: socket.id, name, score: 0 }],
@@ -22,6 +22,7 @@ const ioServer = (socket, io) => {
       answeredPlayers: 0,
       questions: questions,
       isGameStarted: false,
+      answers: [],
       answerCounts: {
         A: 0,
         B: 0,
@@ -36,6 +37,10 @@ const ioServer = (socket, io) => {
       "updatePlayers",
       rooms[roomId].players.map((player) => player.name)
     );
+    console.log(
+      "PLAYERNAME CREATEROOM=",
+      rooms[roomId].players.map((player) => player.name)
+    );
   });
 
   socket.on("joinRoom", ({ roomId, name }) => {
@@ -45,6 +50,10 @@ const ioServer = (socket, io) => {
       socket.emit("joinedRoom", { id: socket.id });
       io.to(roomId).emit(
         "updatePlayers",
+        rooms[roomId].players.map((player) => player.name)
+      );
+      console.log(
+        "PLAYERNAME JOINROOM=",
         rooms[roomId].players.map((player) => player.name)
       );
     } else {
@@ -59,8 +68,11 @@ const ioServer = (socket, io) => {
       rooms[roomId].isGameStarted = true;
       io.to(roomId).emit("gameStarted");
       // sendQuestion(roomId, io);
-      const room = rooms[roomId]
-      io.to(roomId).emit("newQuestion", room.questions[room.currentQuestionIndex]);
+      const room = rooms[roomId];
+      io.to(roomId).emit(
+        "newQuestion",
+        room.questions[room.currentQuestionIndex]
+      );
       console.log("Sent questionData");
     }
   });
@@ -80,14 +92,23 @@ const ioServer = (socket, io) => {
         io.to(roomId).emit("RoomAnswerCount", room.answerCounts);
       }
 
-      const correct = answer === room.questions[room.currentQuestionIndex].answer
+      const correct =
+        answer === room.questions[room.currentQuestionIndex].answer;
 
       if (correct) {
         player.score += timeLeft * 50;
       }
+
+      console.log(
+        "Question at ",
+        room.currentQuestionIndex + 1,
+        "Score =",
+        player.score
+      );
+      // if answer->false , isTimeout->true
       socket.emit("answerResult", {
         correct,
-        score: player.score,
+        scoreBackend: player.score,
       });
 
       const data = { answer: correct, timeStamp: timeLeft, participantId: playerId, questionId }
@@ -108,24 +129,26 @@ const ioServer = (socket, io) => {
 
         // Broadcast updated scores
         io.to(roomId).emit("updateScores", room.players);
-      } else {
-        //player.hasAnswered = false;
       }
       console.log("-------------------------------------------------------");
     }
-    //if (isTimeout) player.hasAnswered = false;
   });
 
   socket.on("nextQuestion", (roomId) => {
     const room = rooms[roomId];
     // console.log("RoomID in nextQuestion=", room);
     room.answerCounts = { A: 0, B: 0, C: 0, D: 0 }; // Reset counts for next question
-    io.to(roomId).emit("newQuestion", room.questions[room.currentQuestionIndex]);
+    io.to(roomId).emit(
+      "newQuestion",
+      room.questions[room.currentQuestionIndex]
+    );
     console.log("nextQuestion Backend is working");
   });
 
   socket.on("ShowScoreboard", (roomId) => {
     //chcking if LastQuestion in Scoreboard
+    //reset AnswerCount
+    io.to(roomId).emit("answerCount", 0);
     const room = rooms[roomId];
     if (room.currentQuestionIndex < room.questions.length - 1) {
       room.currentQuestionIndex += 1;
@@ -164,4 +187,4 @@ const ioServer = (socket, io) => {
   });
 };
 
-module.exports = ioServer
+module.exports = ioServer;
