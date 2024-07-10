@@ -1,10 +1,28 @@
+const commentService = require("../services/comment-service")
+const questionService = require("../services/question-service")
+const createError = require("../utils/create-error")
+
 const commentController = {}
 
 
 // ---------------- For Question
 commentController.createCommentQuestion = async (req, res, next) => {
     try {
-        console.log(req.params, 'comment question');
+        const { questionId } = req.params
+        const data = req.body
+
+        const existQuestion = await questionService.getQuestionByQuestionId(+questionId)
+        if (!existQuestion) {
+            createError(400, "Question not found")
+        }
+
+        data.rate = 5
+        data.questionId = existQuestion.id
+        data.userId = req.user.id
+
+        const comment = await commentService.createQuestionComment(data)
+        console.log(comment);
+        res.status(201).json({ comment })
     } catch (error) {
         next(error)
     }

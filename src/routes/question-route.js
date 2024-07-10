@@ -24,7 +24,7 @@ questionRouter.post("/:questionId/favorite", favoriteController.favoriteQuestion
 questionRouter.delete("/:questionId/favorite", favoriteController.unfavoriteQuestion);
 
 // Comment
-// questionRouter.post("/:questionId/comment", commentController.createCommentQuestion);
+questionRouter.post("/:questionId/comment", commentController.createCommentQuestion);
 // questionRouter.patch("/:questionId/comment/:commentId", commentController.editCommentQuestion);
 // questionRouter.delete("/:questionId/comment/:commentId", commentController.deleteCommentQuestion);
 

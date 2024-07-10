@@ -14,6 +14,7 @@ const ioServer = (socket, io) => {
   console.log("A user connected");
 
   socket.on("createRoom", ({ name, questions, eventId }) => {
+    // const roomId = Math.floor(1000 + Math.random() * 9000);
     const roomId = Math.random().toString(36).substring(2, 10);
     rooms[roomId] = {
       owner: socket.id,
@@ -23,6 +24,7 @@ const ioServer = (socket, io) => {
       answeredPlayers: 0,
       questions: questions,
       isGameStarted: false,
+      answers: [],
       answerCounts: {
         A: 0,
         B: 0,
@@ -37,15 +39,23 @@ const ioServer = (socket, io) => {
       "updatePlayers",
       rooms[roomId].players.map((player) => player.name)
     );
+    console.log(
+      "PLAYERNAME CREATEROOM=",
+      rooms[roomId].players.map((player) => player.name)
+    );
   });
 
   socket.on("joinRoom", ({ roomId, name }) => {
     if (rooms[roomId]) {
       rooms[roomId].players.push({ id: socket.id, name, score: 0 });
       socket.join(roomId);
-      socket.emit("joinedRoom");
+      socket.emit("joinedRoom", { id: socket.id });
       io.to(roomId).emit(
         "updatePlayers",
+        rooms[roomId].players.map((player) => player.name)
+      );
+      console.log(
+        "PLAYERNAME JOINROOM=",
         rooms[roomId].players.map((player) => player.name)
       );
     } else {
@@ -69,60 +79,76 @@ const ioServer = (socket, io) => {
     }
   });
 
-  socket.on("submitAnswer", ({ roomId, answer, timeLeft }) => {
-    const room = rooms[roomId];
-    console.log(
-      "00000000000000000000000000000000000000000000000000000000000000000000000"
-    );
-    const player = room.players.find((p) => p.id === socket.id);
-    if (player && !player.hasAnswered && player.id !== room.owner) {
-      player.hasAnswered = true;
-      room.answeredPlayers += 1;
+  socket.on(
+    "submitAnswer",
+    ({ roomId, answer, timeLeft, playerId, questionId }) => {
+      const room = rooms[roomId];
+      console.log(
+        "000000000000000000000000000000000000000000000000000000000000000000000"
+      );
+      const player = room.players.find((p) => p.id === socket.id);
+      if (player && !player.hasAnswered && player.id !== room.owner) {
+        player.hasAnswered = true;
+        room.answeredPlayers += 1;
 
-      io.to(roomId).emit("answerCount", room.answeredPlayers);
+        io.to(roomId).emit("answerCount", room.answeredPlayers);
 
-      if (answer) {
-        room.answerCounts[answer] += 1;
-        io.to(roomId).emit("RoomAnswerCount", room.answerCounts);
-      }
+        if (answer) {
+          room.answerCounts[answer] += 1;
+          io.to(roomId).emit("RoomAnswerCount", room.answerCounts);
+        }
 
-      const correct =
-        answer === room.questions[room.currentQuestionIndex].answer;
+        const correct =
+          answer === room.questions[room.currentQuestionIndex].answer;
 
-      if (correct) {
-        player.score += timeLeft * 50;
-      }
-      socket.emit("answerResult", {
-        correct,
-        score: player.score,
-      });
+        if (correct) {
+          player.score += timeLeft * 50;
+        }
 
-      const nonOwnerPlayers = room.players.filter((p) => p.id !== room.owner);
-      //    if(room.answeredPlayers === 3) is working
-      if (nonOwnerPlayers.every((p) => p.hasAnswered)) {
         console.log(
-          "answeredPlayers in filterNonOwner =>",
-          room.answeredPlayers
+          "Question at ",
+          room.currentQuestionIndex + 1,
+          "Score =",
+          player.score
         );
+        // if answer->false , isTimeout->true
+        socket.emit("answerResult", {
+          correct,
+          scoreBackend: player.score,
+        });
 
-        io.to(roomId).emit("showAnswer");
-        //reset to Next Questions
-        room.answeredPlayers = 0;
-        room.players.forEach((p) => (p.hasAnswered = false)); //all players set to false
+        const data = {
+          answer: correct,
+          timeStamp: timeLeft,
+          participantId: playerId,
+          questionId,
+        };
+        gameService.submitAnswer(data);
 
-        // Broadcast updated scores
-        io.to(roomId).emit("updateScores", room.players);
-      } else {
-        //player.hasAnswered = false;
+        const nonOwnerPlayers = room.players.filter((p) => p.id !== room.owner);
+        //    if(room.answeredPlayers === 3) is working
+        if (nonOwnerPlayers.every((p) => p.hasAnswered)) {
+          // console.log(
+          //   "answeredPlayers in filterNonOwner =>",
+          //   room.answeredPlayers
+          // );
+
+          io.to(roomId).emit("showAnswer");
+          //reset to Next Questions
+          room.answeredPlayers = 0;
+          room.players.forEach((p) => (p.hasAnswered = false)); //all players set to false
+
+          // Broadcast updated scores
+          io.to(roomId).emit("updateScores", room.players);
+        }
+        console.log("-------------------------------------------------------");
       }
-      console.log("-------------------------------------------------------");
     }
-    //if (isTimeout) player.hasAnswered = false;
-  });
+  );
 
   socket.on("nextQuestion", (roomId) => {
     const room = rooms[roomId];
-    console.log("RoomID in nextQuestion=", room);
+    // console.log("RoomID in nextQuestion=", room);
     room.answerCounts = { A: 0, B: 0, C: 0, D: 0 }; // Reset counts for next question
     io.to(roomId).emit(
       "newQuestion",
@@ -133,6 +159,8 @@ const ioServer = (socket, io) => {
 
   socket.on("ShowScoreboard", (roomId) => {
     //chcking if LastQuestion in Scoreboard
+    //reset AnswerCount
+    io.to(roomId).emit("answerCount", 0);
     const room = rooms[roomId];
     if (room.currentQuestionIndex < room.questions.length - 1) {
       room.currentQuestionIndex += 1;
