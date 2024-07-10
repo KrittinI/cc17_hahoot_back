@@ -13,7 +13,8 @@ const ioServer = (socket, io) => {
   console.log("A user connected");
 
   socket.on("createRoom", ({ name, questions, eventId }) => {
-    const roomId = Math.floor(1000 + Math.random() * 9000);
+    // const roomId = Math.floor(1000 + Math.random() * 9000);
+    const roomId = Math.random().toString(36).substring(2, 10);
     rooms[roomId] = {
       owner: socket.id,
       players: [{ id: socket.id, name, score: 0 }],
