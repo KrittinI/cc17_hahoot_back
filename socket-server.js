@@ -37,31 +37,45 @@ const ioServer = (socket, io) => {
     socket.emit("roomCreated", roomId);
     io.to(roomId).emit(
       "updatePlayers",
-      rooms[roomId].players.map((player) => player.name)
+      rooms[roomId].players?.map((player) => player.name)
     );
     console.log(
       "PLAYERNAME CREATEROOM=",
-      rooms[roomId].players.map((player) => player.name)
+      rooms[roomId].players?.map((player) => player.name)
     );
   });
 
   socket.on("joinRoom", ({ roomId, name }) => {
-    if (rooms[roomId]) {
-      rooms[roomId].players.push({ id: socket.id, name, score: 0 });
+    if (rooms[roomId] && rooms[roomId].locked) {
+      socket.emit("lockStatus", { status: "locked" });
+    } else if (rooms[roomId]) {
+      rooms[roomId].players?.push({ id: socket.id, name, score: 0 });
       socket.join(roomId);
       socket.emit("joinedRoom", { id: socket.id });
       io.to(roomId).emit(
         "updatePlayers",
-        rooms[roomId].players.map((player) => player.name)
+        rooms[roomId].players?.map((player) => player.name)
       );
       console.log(
         "PLAYER-NAME JOINROOM=",
-        rooms[roomId].players.map((player) => player.name)
+        rooms[roomId].players?.map((player) => player.name)
       );
       console.log("ROOM=>", rooms[roomId]);
     } else {
       socket.emit("roomNotFound"); // Notify if room not found
     }
+  });
+
+  // Lock room
+  socket.on("lockRoom", ({ roomId }) => {
+    rooms[roomId] = { locked: true };
+    io.to(roomId).emit("lockStatus", { status: "locked" });
+  });
+
+  // Unlock room
+  socket.on("unlockRoom", ({ roomId }) => {
+    rooms[roomId] = { locked: false };
+    io.to(roomId).emit("lockStatus", { status: "unlocked" });
   });
 
   socket.on("startGame", (roomId) => {
@@ -87,7 +101,7 @@ const ioServer = (socket, io) => {
       console.log(
         "000000000000000000000000000000000000000000000000000000000000000000000"
       );
-      const player = room.players.find((p) => p.id === socket.id);
+      const player = room.players?.find((p) => p.id === socket.id);
       if (player && !player.hasAnswered && player.id !== room.owner) {
         player.hasAnswered = true;
         room.answeredPlayers += 1;
@@ -130,7 +144,9 @@ const ioServer = (socket, io) => {
         };
         gameService.submitAnswer(data);
 
-        const nonOwnerPlayers = room.players.filter((p) => p.id !== room.owner);
+        const nonOwnerPlayers = room.players?.filter(
+          (p) => p.id !== room.owner
+        );
         //    if(room.answeredPlayers === 3) is working
         if (nonOwnerPlayers.every((p) => p.hasAnswered)) {
           // console.log(
@@ -141,7 +157,7 @@ const ioServer = (socket, io) => {
           io.to(roomId).emit("showAnswer");
           //reset to Next Questions
           room.answeredPlayers = 0;
-          room.players.forEach((p) => (p.hasAnswered = false)); //all players set to false
+          room.players?.forEach((p) => (p.hasAnswered = false)); //all players set to false
 
           // Broadcast updated scores
           io.to(roomId).emit("updateScores", room.players);
@@ -188,8 +204,8 @@ const ioServer = (socket, io) => {
     console.log(`PlayerID: ${socket.id} disconnected`);
     for (const roomId in rooms) {
       const room = rooms[roomId];
-      room.players = room.players.filter((player) => player.id !== socket.id);
-      if (room.players.length === 0) {
+      room.players = room.players?.filter((player) => player.id !== socket.id);
+      if (room.players?.length === 0) {
         delete rooms[roomId];
       } else {
         if (room.owner === socket.id) {
@@ -197,7 +213,7 @@ const ioServer = (socket, io) => {
         }
         io.to(roomId).emit(
           "updatePlayers",
-          room.players.map((player) => player.name)
+          room.players?.map((player) => player.name)
         );
       }
     }
