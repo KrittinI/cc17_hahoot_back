@@ -11,7 +11,8 @@ const ioServer = (socket, io) => {
     console.log("With Arg", arg);
   });
   // console.log(rooms);
-  console.log("A user connected");
+  socket.emit("connection", socket.id);
+  console.log(`PlayerID: ${socket.id} connected`);
 
   socket.on("createRoom", ({ name, questions, eventId }) => {
     // const roomId = Math.floor(1000 + Math.random() * 9000);
@@ -55,9 +56,10 @@ const ioServer = (socket, io) => {
         rooms[roomId].players.map((player) => player.name)
       );
       console.log(
-        "PLAYERNAME JOINROOM=",
+        "PLAYER-NAME JOINROOM=",
         rooms[roomId].players.map((player) => player.name)
       );
+      console.log("ROOM=>", rooms[roomId]);
     } else {
       socket.emit("roomNotFound"); // Notify if room not found
     }
@@ -96,11 +98,13 @@ const ioServer = (socket, io) => {
         if (answer) {
           room.answerCounts[answer] += 1;
           io.to(roomId).emit("RoomAnswerCount", room.answerCounts);
+        } else {
+          io.to(roomId).emit("RoomAnswerCount", room.answerCounts);
         }
 
-        const correct =
-          answer === room.questions[room.currentQuestionIndex].answer;
-
+        const correct = Boolean(
+          answer === room.questions[room.currentQuestionIndex].answer
+        );
         if (correct) {
           player.score += timeLeft * 50;
         }
@@ -112,7 +116,9 @@ const ioServer = (socket, io) => {
           player.score
         );
         // if answer->false , isTimeout->true
+
         socket.emit("answerResult", {
+          playerIdBackend: playerId,
           correct,
           scoreBackend: player.score,
         });
@@ -180,7 +186,7 @@ const ioServer = (socket, io) => {
   });
 
   socket.on("disconnect", () => {
-    console.log("A user disconnected");
+    console.log(`PlayerID: ${socket.id} disconnected`);
     for (const roomId in rooms) {
       const room = rooms[roomId];
       room.players = room.players.filter((player) => player.id !== socket.id);
