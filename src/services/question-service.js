@@ -136,9 +136,12 @@ questionService.editQuestionByQuestionId = (questionId, newInfo) => {
 };
 
 questionService.deleteQuestionByQuestionId = (questionId) => {
-  return prisma.question.delete({
+  return prisma.question.update({
     where: {
       id: questionId,
+    },
+    data: {
+      isDelete: true,
     },
   });
 };

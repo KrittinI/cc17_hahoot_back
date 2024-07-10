@@ -196,7 +196,9 @@ eventController.createEvent = async (req, res, next) => {
 eventController.editEvent = async (req, res, next) => {
   try {
     const { eventId } = req.params;
-    const eventData = req.body.event;
+    console.log(req.body);
+    const eventData = req.body.events;
+    console.log(eventData);
     const existedEvent = await eventService.findEventById(+eventId);
     if (existedEvent.creatorId !== req.user.id) {
       createError(403, "no permission on this event");
@@ -227,6 +229,9 @@ eventController.editEvent = async (req, res, next) => {
 // DELETE Delete Event
 eventController.deleteEvent = async (req, res, next) => {
   try {
+    const { eventId } = req.params;
+    await eventService.deleteEventById(+eventId);
+    res.status(200).json({ message: "deleted" });
   } catch (error) {
     next(error);
   }
