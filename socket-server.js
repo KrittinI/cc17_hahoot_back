@@ -1,5 +1,6 @@
 const { event, room } = require("./src/models/prisma");
 const gameService = require("./src/services/game-service");
+// const transporter = require("./src/utils/nodemailer");
 
 //Backend Multiplayer
 let rooms = {};
@@ -8,7 +9,7 @@ const ioServer = (socket, io) => {
   socket.onAny((event, ...arg) => {
     console.log("Receive Event", event);
     console.log("With Arg", arg);
-  })
+  });
   // console.log(rooms);
   console.log("A user connected");
 
@@ -54,21 +55,25 @@ const ioServer = (socket, io) => {
 
   socket.on("startGame", (roomId) => {
     console.log(roomId, rooms[roomId]);
-    gameService.startGame(roomId, rooms[roomId])
+    gameService.startGame(roomId, rooms[roomId]);
     if (rooms[roomId] && rooms[roomId].owner === socket.id) {
       rooms[roomId].isGameStarted = true;
       io.to(roomId).emit("gameStarted");
       // sendQuestion(roomId, io);
-      const room = rooms[roomId]
-      io.to(roomId).emit("newQuestion", room.questions[room.currentQuestionIndex]);
+      const room = rooms[roomId];
+      io.to(roomId).emit(
+        "newQuestion",
+        room.questions[room.currentQuestionIndex]
+      );
       console.log("Sent questionData");
     }
   });
 
   socket.on("submitAnswer", ({ roomId, answer, timeLeft }) => {
     const room = rooms[roomId];
-    console.log("00000000000000000000000000000000000000000000000000000000000000000000000");
-    console.log(room.players);
+    console.log(
+      "00000000000000000000000000000000000000000000000000000000000000000000000"
+    );
     const player = room.players.find((p) => p.id === socket.id);
     if (player && !player.hasAnswered && player.id !== room.owner) {
       player.hasAnswered = true;
@@ -81,7 +86,8 @@ const ioServer = (socket, io) => {
         io.to(roomId).emit("RoomAnswerCount", room.answerCounts);
       }
 
-      const correct = answer === room.questions[room.currentQuestionIndex].answer
+      const correct =
+        answer === room.questions[room.currentQuestionIndex].answer;
 
       if (correct) {
         player.score += timeLeft * 50;
@@ -118,7 +124,10 @@ const ioServer = (socket, io) => {
     const room = rooms[roomId];
     console.log("RoomID in nextQuestion=", room);
     room.answerCounts = { A: 0, B: 0, C: 0, D: 0 }; // Reset counts for next question
-    io.to(roomId).emit("newQuestion", room.questions[room.currentQuestionIndex]);
+    io.to(roomId).emit(
+      "newQuestion",
+      room.questions[room.currentQuestionIndex]
+    );
     console.log("nextQuestion Backend is working");
   });
 
@@ -162,4 +171,4 @@ const ioServer = (socket, io) => {
   });
 };
 
-module.exports = ioServer
+module.exports = ioServer;

@@ -1,18 +1,25 @@
-const prisma = require("../models/prisma")
+const prisma = require("../models/prisma");
 
-const gameService = {}
+const gameService = {};
 
-gameService.startGame = (roomId, roomData) => prisma.$transaction(async (tx) => {
+gameService.startGame = (roomId, roomData) =>
+  prisma.$transaction(async (tx) => {
     // Create participants data
-    const participants = roomData.players.map((player) => ({ id: player.id, username: player.name }))
-    const rooms = roomData.players.map((player => ({ participantId: player.id, roomId, eventId: roomData.eventId })))
-    console.log('rooms', rooms)
-    await tx.participant.createMany({ data: participants })
-    await tx.room.createMany({ data: rooms })
-})
+    const participants = roomData.players.map((player) => ({
+      id: player.id,
+      username: player.name,
+    }));
+    const rooms = roomData.players.map((player) => ({
+      participantId: player.id,
+      roomId,
+      eventId: roomData.eventId,
+    }));
+    console.log("rooms", rooms);
+    await tx.participant.createMany({ data: participants });
+    await tx.room.createMany({ data: rooms });
+  });
 
-
-module.exports = gameService
+module.exports = gameService;
 
 // roomId fxma3auv
 // roomData {
