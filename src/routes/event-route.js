@@ -18,7 +18,7 @@ eventRouter.get("/:eventId", eventController.getEventById);
 
 //----------------- For Another Method -----------------
 eventRouter.post("/", upload.single("eventImage"), eventController.createEvent);
-eventRouter.patch("/:eventId", eventController.editEvent);
+eventRouter.patch("/:eventId", upload.single("eventImage"), eventController.editEvent);
 eventRouter.delete("/:eventId", eventController.deleteEvent);
 
 //----------------- For Favorite -----------------
