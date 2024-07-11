@@ -38,7 +38,7 @@ const ioServer = (socket, io) => {
     socket.emit("roomCreated", roomId);
     io.to(roomId).emit(
       "updatePlayers",
-      rooms[roomId].players?.map((player) => player.name)
+      rooms[roomId].players?.map((player) => player)
     );
     console.log(
       "PLAYERNAME CREATEROOM=",
@@ -55,7 +55,7 @@ const ioServer = (socket, io) => {
       socket.emit("joinedRoom", { id: socket.id });
       io.to(roomId).emit(
         "updatePlayers",
-        rooms[roomId].players?.map((player) => player.name)
+        rooms[roomId].players?.map((player) => player)
       );
       console.log(
         "PLAYER-NAME JOINROOM=",
@@ -77,6 +77,12 @@ const ioServer = (socket, io) => {
   socket.on("unlockRoom", ({ roomId }) => {
     rooms[roomId] = { locked: false };
     io.to(roomId).emit("lockStatus", { status: "unlocked" });
+  });
+
+  socket.on("kickPlayer", (playerId, room) => {
+    io.to(playerId).emit("kicked");
+    io.sockets.sockets.get(playerId)?.leave(room);
+    console.log(`Kicked player: ${playerId} from room: ${room}`);
   });
 
   socket.on("startGame", (roomId) => {
@@ -214,7 +220,7 @@ const ioServer = (socket, io) => {
         }
         io.to(roomId).emit(
           "updatePlayers",
-          room.players?.map((player) => player.name)
+          room.players?.map((player) => player)
         );
       }
     }
