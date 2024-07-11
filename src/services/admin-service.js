@@ -41,7 +41,8 @@ adminService.getAllData = async () => {
       topicId: true,
       _count: {
         select: {
-          assignOfBridges: true
+          assignOfBridges: true,
+          AnswerOfBridge: true
         }
       }
     }
@@ -97,6 +98,19 @@ adminService.getAllData = async () => {
       },
     }
   })
+
+  result.answerQuestion = await prisma.answerOfBridge.groupBy({
+    by: ["questionId"],
+    where: {
+      answer: {
+        equals: true
+      }
+    },
+    _count: {
+      answer: true
+    }
+  })
+
 
   return result
 }
