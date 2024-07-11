@@ -196,9 +196,12 @@ eventController.createEvent = async (req, res, next) => {
 eventController.editEvent = async (req, res, next) => {
   try {
     const { eventId } = req.params;
-    console.log(req.body);
-    const eventData = req.body.events;
-    console.log(eventData);
+    const eventData = JSON.parse(req.body.events);
+    const questionData = JSON.parse(req.body.questions);
+    console.log(req.file);
+    const url = await uploadService.upload(req.file.path);
+
+    const eventAllData = { ...eventData, eventImage: url };
     const existedEvent = await eventService.findEventById(+eventId);
     if (existedEvent.creatorId !== req.user.id) {
       createError(403, "no permission on this event");
@@ -216,13 +219,18 @@ eventController.editEvent = async (req, res, next) => {
     if (eventData.timeLimit) {
       eventData.timeLimit = +eventData.timeLimit;
     }
+
     delete req.body.Room;
     console.log(req.body, "reqbody");
 
-    const updateEvent = await eventService.updateEvent(+eventId, req.body);
+    const updateEvent = await eventService.updateEvent(+eventId, { events: eventAllData, questions: questionData });
     res.status(200).json(updateEvent);
   } catch (error) {
     next(error);
+  } finally {
+    if (req.file?.fieldname === "eventImage") {
+      fs.unlink(req.file?.path);
+    }
   }
 };
 
