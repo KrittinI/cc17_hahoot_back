@@ -69,13 +69,13 @@ const ioServer = (socket, io) => {
 
   // Lock room
   socket.on("lockRoom", ({ roomId }) => {
-    rooms[roomId] = { locked: true };
+    rooms[roomId].locked = true;
     io.to(roomId).emit("lockStatus", { status: "locked" });
   });
 
   // Unlock room
   socket.on("unlockRoom", ({ roomId }) => {
-    rooms[roomId] = { locked: false };
+    rooms[roomId].locked = false;
     io.to(roomId).emit("lockStatus", { status: "unlocked" });
   });
 
