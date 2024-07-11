@@ -36,7 +36,8 @@ playGameController.sendMail = async (req, res, next) => {
 
 playGameController.multiplayerSendMail = async (req, res, next) => {
   const result = req.body;
-  const listPlayer = result.players
+
+  const listPlayer = result.data
     .sort((a, b) => b.score - a.score)
     .map(
       (p, index) =>
@@ -51,7 +52,7 @@ playGameController.multiplayerSendMail = async (req, res, next) => {
   const showScore = `
     <h3>Please do not reply to this mail</h3>
     <h3>Hello, this is your result</h3>
-    <div style="position: relative;background-image: url('cid:background'); background-repeat: no-repeat;">
+    <div style="position: relative">
         <div style="position: absolute;display: grid; gap: 0.5rem; border-radius: 0.5rem; padding: 2rem; box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1); border: 2px solid DodgerBlue; background: linear-gradient(180deg, rgba(173, 194, 255, 1) 0%, rgba(231, 237, 255, 1) 100%);margin-left:35%;width:30%;text-align:center">
           <h1 style="font-weight: bold;">Scoreboard</h1>
           <table style="border-collapse: collapse;">
@@ -60,15 +61,15 @@ playGameController.multiplayerSendMail = async (req, res, next) => {
                 <th>Ranking</th>
                 <th>Username</th>
                 <th>Score</th>
-              </tr>
+                </tr>
+                ${listPlayer}
             </thead>
             <tbody>
-              ${listPlayer}
             </tbody>
-          </table>
-      </div>
-    </div>
-  `;
+            </table>
+            </div>
+            </div>
+            `;
 
   try {
     const mailOptions = {
@@ -76,13 +77,6 @@ playGameController.multiplayerSendMail = async (req, res, next) => {
       to: result.email, // list of receivers
       subject: "Result of event game from Hahoot", // Mail subject
       html: showScore, // HTML body
-      attachments: [
-        {
-          filename: "hhBackground.jpg",
-          path: __dirname + "/hhBackground.jpg",
-          cid: "background", //same cid value as in the html img src
-        },
-      ],
     };
     transporter.sendMail(mailOptions, function (err, info) {
       if (err) console.log(err);
