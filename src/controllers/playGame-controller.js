@@ -1,4 +1,8 @@
 const transporter = require("../utils/nodemailer");
+const sanitizeHtml = require("sanitize-html");
+const sharp = require("sharp");
+const fs = require("fs");
+const uploadService = require("../services/upload-service");
 
 const playGameController = {};
 playGameController.sendMail = async (req, res, next) => {
@@ -35,6 +39,38 @@ playGameController.sendMail = async (req, res, next) => {
 };
 
 playGameController.multiplayerSendMail = async (req, res, next) => {
+  const result = req.body;
+  const image = result.scoreImage;
+  const imageBase64 = new Buffer.from(image.split("base64,")[1], "base64");
+
+  try {
+    const mailOptions = {
+      from: process.env.NODE_MAILER_USER, // sender
+      to: result.email, // list of receivers
+      // to: result.email, // list of receivers
+      subject: "Result of event game from Hahoot", // Mail subject
+      html: `<div>
+       <h3>Please do not reply to this mail</h3>
+  <h3>Hello, this is your result</h3>
+      </div>`, // HTML body
+      attachments: [
+        {
+          filename: "score.jpg",
+          contentType: "image/jpeg",
+          content: imageBase64,
+        },
+      ],
+    };
+    transporter.sendMail(mailOptions, function (err, info) {
+      if (err) console.log(err);
+      else console.log(info);
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+playGameController.clientPlayerSendMail = async (req, res, next) => {
   const result = req.body;
 
   const listPlayer = result.data
