@@ -9,12 +9,10 @@ playGameController.sendMail = async (req, res, next) => {
   const text = req.body.map(
     (question) =>
       `<ul style=";color:black">
-        <strong>Question : </strong> ${
-          JSON.stringify(question?.question).split('"')[1]
-        }
-       <li><strong>Your answer : </strong>${
-         JSON.stringify(question?.yourAnswer).split('"')[1]
-       }</li>
+        <strong>Question : </strong> ${JSON.stringify(question?.question).split('"')[1]
+      }
+       <li><strong>Your answer : </strong>${JSON.stringify(question?.yourAnswer).split('"')[1]
+      }</li>
        <li><strong>Result : </strong>${JSON.stringify(question?.result)}</li>
        <li><strong>Score : </strong>${JSON.stringify(question?.score)}</li>
        <li><strong>Sum : </strong>${JSON.stringify(question?.sum)}</li>
